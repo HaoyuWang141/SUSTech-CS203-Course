@@ -1,0 +1,352 @@
+//原版
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	int n;
+	int C;
+	cin>>n>>C;
+	int *array = new int[n];
+	
+	for(int i = 0; i < n; i++)
+	{
+		cin>>array[i];
+	}
+	
+	if(n == 1)
+	{
+		cout << "0" << endl;
+	}
+	else
+	{
+		int count = 0;
+		int num = 0;
+		for(int i = 0; i < n - 1; i++)
+		{
+			if(array[i] > C) continue;
+			num = C - array[i];
+			for(int j = i + 1; j < n; j++)
+			{
+				if(array[j] == num)
+				{
+						count++;
+				}
+			}
+		}
+		cout << count << endl;	
+	}
+	delete[] array;
+
+	return 0;
+}
+t = 3
+2 2 2 2 2 2 2 3 
+
+//满分双指针
+#include <iostream>
+using namespace std;
+
+int main()
+{
+
+	int n;
+	int C;
+	cin>>n>>C;
+	int *array = new int[n];
+	
+	long long count = 0;
+	int target = 0;
+	int left = 0;
+	int right = 0;
+	bool B = false;
+	
+	for(int i = 0; i < n; i++)
+	{
+		cin>>array[i];
+	}
+	
+	if(n == 1)
+	{
+		cout << "0" << endl;
+	}
+	else
+	{
+		left = n - 1;
+		right = n - 1;
+					
+		for(int i = 0; i < n - 1; i++)
+		{
+			target = C - array[i];
+			cout<<"target = "<<target<<endl;
+			if(target < array[i]) 
+			{
+				cout<<"break"<<endl;
+				cout<<endl;
+				break;
+			}
+			if(target == array[i]) 
+			{
+				int j = i+1;
+				while(array[j]==array[i])
+				{
+					count++;
+					j++;
+				}
+				cout<<"continue"<<endl;
+				cout<< "count" <<count<<endl;
+				cout<<endl;
+				continue;
+			}
+			B = false;
+			while(true)
+			{
+				//cout << "left"<<left<<endl;
+				//cout<<"right"<<right<<endl;
+				if(array[left] < target & array[right] < target)
+				{
+					B = false;
+					break;
+				}
+				
+				if(array[left] < target & array[right] == target)
+				{
+					B = true;
+					break;
+				}
+				
+				if(array[left] >= target)
+					left--;
+				
+				if(array[right] > target)
+					right--;
+			}
+			if(B == true)
+				count += right - left;
+			cout<< "count" <<count<<endl;
+			cout<<endl;
+		}
+		cout << count << endl;	
+	}
+	delete[] array;
+
+	return 0;
+}
+
+//map
+#include <iostream>
+#include <map>
+using namespace std;  	
+
+int main()
+{
+	int n;
+	int C;
+	cin>>n>>C;
+	int *array = new int[n];
+	
+	for(int i = 0; i < n; i++)
+	{
+		cin>>array[i];
+	}
+	
+	if(n == 1)
+	{
+		cout << "0" << endl;
+	}
+	else
+	{
+		int count = 0;
+        map<int,int> map;
+        //hash_map<int,int> hp;
+        for(int i = 0; i < n; i++)
+		{
+           map[array[i]] = i;
+        }
+		for(int i = 0; i < n; i++)
+		{
+			cout<< map[array[i]]<<endl;
+           
+        }
+        for(int j = 0; j < n; j++)
+		{
+			cout <<"j:"<< j <<endl;
+			cout <<"C:"<<C<<endl;
+			cout <<"array[j]:"<<array[j]<<endl;
+			cout <<"map.count(C-array[j]):"<< map.count(C-array[j]) <<endl;
+            if(map[C-array[j]]!=j)
+			{
+                count += map.count(C-array[j]);
+				cout << count << endl;
+            }
+			else
+			{
+				count = count + map.count(C-array[j]) - 1;
+				cout << count << endl;
+			}
+			cout<<"----------------"<<endl;
+        }
+		
+		cout << count << endl;	
+	}
+	delete[] array;
+
+	return 0;
+}
+
+//二分法
+#include <iostream>
+#include <map>
+using namespace std;
+
+int main()
+{
+	int n;
+	int C;
+	cin>>n>>C;
+	int *array = new int[n];
+	
+	for(int i = 0; i < n; i++)
+	{
+		cin>>array[i];
+	}
+	
+	if(n == 1)
+	{
+		cout << "0" << endl;
+	}
+	else
+	{
+		int count = 0;
+		int left = 0;
+		int right = n - 1;
+		int mid = 0;
+		while(left < right - 1)
+		{
+			mid = (left + right) / 2;
+			if(array[mid] == C)
+			{
+				break;
+			}
+			else if(array[mid] < C)
+			{
+				left = mid;	
+			}
+			else
+			{
+				right = mid;
+			}
+		}
+		
+		int num = 0;
+		for(int i = 0; i < right; i++)
+		{
+			num = C - array[i];
+			for(int j = i + 1; j < right; j++)
+			{
+				if(array[j] == num)
+				{
+						count++;
+				}
+			}
+		}
+		cout << count << endl;
+	}
+	delete[] array;
+
+	return 0;
+}
+
+#双指针：#15 三数之和
+#参考https://leetcode-cn.com/problems/3sum/solution/san-shu-zhi-he-by-leetcode-solution/
+#include <iostream>
+using namespace std;
+
+#未完成的二分法
+#include <iostream>
+using namespace std;
+
+int main()
+{
+
+	int n;
+	int C;
+	cin>>n>>C;
+	int *array = new int[n];
+	
+	for(int i = 0; i < n; i++)
+	{
+		cin>>array[i];
+	}
+	
+	if(n == 1)
+	{
+		cout << "0" << endl;
+	}
+	else
+	{
+		int count = 0;
+		int target = 0;
+		int left = 0;
+		int right = 0;
+		int mid = 0;
+		bool B = false;
+
+		for(int i = 0; i < n - 1; i++)
+		{
+			target = C - array[i];
+			cout<<"target = "<<target<<endl;
+			if(target < array[i]) 
+			{
+				cout<<"continue"<<endl;
+				cout<<endl;
+				continue;
+			}
+			left = i + 1;
+			right = n - 1;
+			B = false;
+			
+			while(true)
+			{
+				cout << "left"<<left<<endl;
+				cout<<"right"<<right<<endl;
+				cout<<"mid"<<mid<<endl;
+						
+				mid = (left + right) / 2;
+				
+				if(array[left] > target || array[right] < target)
+				{
+					B = false;
+					break;
+				}
+				
+				if(array[left] == target && array[right] == target)
+				{
+					B = true;
+					break;
+				}
+				
+				if(array[mid] < target)
+				{
+					right = mid;
+				}
+				
+				if(array[mid] > target)
+				{
+					left = mid;
+				}
+				cout<<endl;
+			}
+			if(B == true)
+				count += right - left + 1;
+			cout<< "count" <<count<<endl;
+			cout<<endl;
+		}
+		cout << count << endl;	
+		p_left = NULL;
+		p_right = NULL;
+	}
+	delete[] array;
+
+	return 0;
+}

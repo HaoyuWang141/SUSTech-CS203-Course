@@ -1,0 +1,151 @@
+//霍夫曼树，满分，尤其需要注意队列里的两个weight相同的树，先取level小的，后取level大的。
+#include <iostream>
+#include <cstring>
+#include <queue>
+using namespace std;
+bool test = false;
+typedef long long ll;
+const ll MAX = 100005;
+typedef struct HNode
+{
+    ll has_levels;
+    ll weight;
+    HNode *lchild, *rchild;
+    HNode *next;
+
+    HNode(ll weight = -1, HNode *lchild = nullptr, HNode *rchild = nullptr, ll has_levels = 0)
+    {
+        this->weight = weight;
+        this->lchild = lchild;
+        this->rchild = rchild;
+        this->has_levels = has_levels;
+    }
+
+    HNode(HNode *node)
+    {
+        this->weight = node->weight;
+        this->lchild = node->lchild;
+        this->rchild = node->rchild;
+        this->has_levels = node->has_levels;
+    }
+
+    bool operator>(const HNode &a) const
+    {
+        if (this->weight != a.weight)
+            return this->weight > a.weight;
+        else
+            return this->has_levels > a.has_levels;
+    }
+} * Htree;
+
+HNode forest[MAX];
+HNode head[MAX];
+Htree root = nullptr;
+priority_queue<HNode, vector<HNode>, greater<HNode>> q;
+ll N, L;
+
+ll getWPL(Htree root, ll len)
+{
+    if (L < len)
+        L = len;
+    if (root == nullptr)
+        return 0;
+    else
+    {
+        if (root->lchild == nullptr && root->rchild == nullptr)
+            return root->weight * len;
+        else
+        {
+            ll left = getWPL(root->lchild, len + 1);
+            ll right = getWPL(root->rchild, len + 1);
+            if (test)
+            {
+                cout << "root: " << root->weight << " left: " << left << " right: " << right << endl;
+            }
+            return left + right;
+        }
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test patten" << endl;
+    }
+
+    cin >> N;
+
+    if (N <= 0)
+    {
+        cerr << "something wrong" << endl;
+        return 0;
+    }
+
+    if (N == 1)
+    {
+        ll data;
+        cin >> data;
+        cout << data << endl;
+        cout << 1 << endl;
+        return 0;
+    }
+
+    for (ll i = 0; i < N; i++)
+    {
+        cin >> forest[i].weight;
+        q.push(forest[i]);
+    }
+
+    if (test)
+    {
+        for (ll i = 0; i < N; i++)
+        {
+            cout << q.top().weight << " ";
+            q.pop();
+        }
+        cout << endl;
+        for (ll i = 0; i < N; i++)
+            q.push(forest[i]);
+    }
+
+    while (q.size() > 1)
+    {
+        Htree m, n;
+        m = new HNode(q.top());
+        q.pop();
+        n = new HNode(q.top());
+        q.pop();
+
+        //建新树
+        ll has_levels = max(m->has_levels, n->has_levels) + 1;
+        root = new HNode(m->weight + n->weight, m, n, has_levels);
+        q.push(*root);
+
+        if (test)
+        {
+            int index = 0;
+            while (q.empty() == false)
+            {
+                cout << "(" << q.top().weight << "," << q.top().has_levels << ") ";
+                head[index] = q.top();
+                index++;
+                q.pop();
+            }
+            cout << endl;
+            while (index > 0)
+            {
+                index--;
+                q.push(head[index]);
+            }
+
+            cout << "m: " << m->weight << " n: " << n->weight << " root: " << root->weight << endl;
+        }
+    }
+    ll WPL = getWPL(root, 0);
+    cout << WPL << endl;
+    cout << L << endl;
+
+    return 0;
+}

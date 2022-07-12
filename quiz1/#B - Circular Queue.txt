@@ -1,0 +1,51 @@
+//满分
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main()
+{
+    int N, q, o, in, out;
+    cin >> N >> q;
+    int *queue = new int[N];
+    int head = 0;
+    int rear = 0;
+    int length = 0;
+
+    for (int i = 0; i < q; i++)
+    {
+        cin >> o;
+        switch (o)
+        {
+        case 1:
+            cin >> in;
+            if (length == N)
+                cout << "Queue is full" << endl;
+            else
+            {
+                queue[rear] = in;
+                rear = (rear + 1) % N;
+                cout << rear << endl;
+                length++;
+            }
+
+            break;
+        case 2:
+            if (length == 0)
+                cout << "Queue is empty" << endl;
+            else
+            {
+                out = queue[head];
+                head = (head + 1) % N;
+                cout << head << " " << out << endl;
+                length--;
+            }
+            break;
+        case 3:
+            cout << length << endl;
+            break;
+        }
+    }
+
+    return 0;
+}

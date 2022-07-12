@@ -1,0 +1,50 @@
+// 满分
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+int n, m, x, y;
+int P[100005]{0};
+int flag[100005]{0};
+vector<int> vec[100005];
+int arr[100005]{0};
+void give_P(int f, int c)
+{
+    if (arr[c] == 1)
+        return;
+    arr[c] = 1;
+    P[c] = P[f];
+    for (int i = 0; i < vec[c].size(); i++)
+        give_P(c, vec[c][i]);
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    cin >> n >> m;
+    for (int i = 0; i < m; i++)
+    {
+        cin >> x >> y;
+        if (x != y)
+            vec[y].push_back(x);
+    }
+
+    for (int i = n; i >= 1; i--)
+        P[i] = i;
+
+    for (int i = n; i >= 1; i--)
+        give_P(i, i);
+
+    for (int i = 1; i <= n; i++)
+        cout << P[i] << " ";
+    cout << endl;
+
+    return 0;
+}

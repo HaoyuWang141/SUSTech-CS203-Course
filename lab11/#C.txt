@@ -1,0 +1,71 @@
+// 满分，判断图是否连通
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+#include <queue>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+const int MAX = 10005;
+int n, m, x, y, stack[MAX]{0}, top = 0, vis1[MAX]{0}, vis2[MAX]{0}, n1 = 0, n2 = 0;
+vector<int> vec[MAX], rev[MAX];
+
+void dfs_rev(int f, int c)
+{
+    vis1[c] = 1;
+    n1++;
+    for (int i = 0; i < rev[c].size(); i++)
+    {
+        if (vis1[rev[c][i]] == 0)
+        {
+            dfs_rev(c, rev[c][i]);
+        }
+    }
+}
+
+void dfs(int f, int c)
+{
+    vis2[c] = 1;
+    n2++;
+    for (int i = 0; i < vec[c].size(); i++)
+    {
+        if (vis2[vec[c][i]] == 0)
+        {
+            dfs(c, vec[c][i]);
+        }
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    cin >> n >> m;
+    for (int i = 0; i < m; i++)
+    {
+        cin >> x >> y;
+        vec[x].push_back(y);
+        rev[y].push_back(x);
+    }
+
+    dfs_rev(-1, 1);
+    if (n1 != n)
+    {
+        cout << "No" << endl;
+        return 0;
+    }
+
+    dfs(-1, 1);
+    if (n2 != n)
+    {
+        cout << "No" << endl;
+        return 0;
+    }
+
+    cout << "Yes" << endl;
+    return 0;
+}

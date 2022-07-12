@@ -1,0 +1,173 @@
+// O(nlogn) 会爆栈，两个re，一个tle
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+#include <queue>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+const int MAX = 2000005;
+int n, v;
+
+struct node
+{
+    int value;
+    int index;
+    node *l;
+    node *r;
+
+    node(int value, int index, node *l = nullptr, node *r = nullptr)
+    {
+        this->value = value;
+        this->index = index;
+        this->l = l;
+        this->r = r;
+    }
+};
+node *head = nullptr;
+
+node *insert(node *p, int value, int index)
+{
+    if (p == nullptr)
+    {
+        return new node(value, index);
+    }
+    if (p->value > value)
+    {
+        if (p->index < index)
+        {
+            node *temp_ptr = p;
+            while (temp_ptr->r != nullptr)
+            {
+                if (temp_ptr->r->index > index)
+                    break;
+                temp_ptr = temp_ptr->r;
+            }
+            node *new_node_ptr = new node(value, index, p, temp_ptr->r);
+            temp_ptr->r = nullptr;
+            return new_node_ptr;
+        }
+        else
+        {
+            node *temp_ptr = p;
+            while (temp_ptr->l != nullptr)
+            {
+                if (temp_ptr->l->index < index)
+                    break;
+                temp_ptr = temp_ptr->l;
+            }
+            node *new_node_ptr = new node(value, index, temp_ptr->l, p);
+            temp_ptr->l = nullptr;
+            return new_node_ptr;
+        }
+    }
+    else
+    {
+        if (p->index > index)
+        {
+            p->l = insert(p->l, value, index);
+        }
+        else
+        {
+            p->r = insert(p->r, value, index);
+        }
+    }
+    return p;
+}
+
+ll aaa(node *p, int a, int b)
+{
+    if (p == nullptr)
+        return 0;
+    ll sum = 0;
+    sum += aaa(p->l, a, p->index - 1);
+    sum += aaa(p->r, p->index + 1, b);
+    sum += (ll)p->value * (p->index - a + 1) * (b - p->index + 1);
+    return sum;
+}
+
+int arr[MAX]{0}, heap[MAX]{0}, n_heap;
+void min_heap(int c)
+{
+    if (c > n_heap)
+        return;
+    int l = 2 * c;
+    int r = 2 * c + 1;
+    int m = c;
+    if (l <= n_heap && heap[l] < heap[m])
+        m = l;
+    if (r <= n_heap && heap[r] < heap[m])
+        m = r;
+    if (m != c)
+    {
+        int temp = heap[m];
+        heap[m] = heap[c];
+        heap[c] = temp;
+        min_heap(m);
+    }
+}
+
+int cnt = 0;
+void bbb(int n)
+{
+    if (cnt == n)
+    {
+        head = nullptr;
+        for (int i = 1; i <= n; i++)
+        {
+            cout << arr[i] << " ";
+            head = insert(head, arr[i], i);
+        }
+        cout << aaa(head, 1, n) << " ";
+        int result = 0;
+        for (int l = 1; l <= n; l++)
+        {
+            n_heap = 0;
+            for (int r = l; r <= n; r++)
+            {
+                heap[++n_heap] = arr[r];
+                for (int i = n_heap / 2; i >= 1; i /= 2)
+                    min_heap(i);
+                result += heap[1];
+            }
+        }
+        cout << result << endl;
+        if (aaa(head, 1, n) != result)
+            cout << "false!!!" << endl;
+        return;
+    }
+    cnt++;
+    for (int i = 1; i <= n; i++)
+    {
+        if (arr[i] != 0)
+            continue;
+        arr[i] = cnt;
+        bbb(n);
+        arr[i] = 0;
+    }
+    cnt--;
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    if (test)
+    {
+        cin >> n;
+        bbb(n);
+    }
+    cin >> n;
+    head = nullptr;
+    for (int i = 1; i <= n; i++) // O(nlogn)
+    {
+        cin >> v;
+        head = insert(head, v, i);
+    }
+    cout << aaa(head, 1, n) << endl; // O(n)
+    return 0;
+}

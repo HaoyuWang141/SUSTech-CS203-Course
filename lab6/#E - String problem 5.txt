@@ -1,0 +1,247 @@
+//不成功的尝试
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+const int MAX = 1000000;
+
+struct hole
+{
+    int begin;
+    int end;
+    int length;
+    hole *last;
+    hole *next;
+
+    hole(int begin, int end, hole *last)
+    {
+        this->begin = begin;
+        this->end = end;
+        this->length = end - begin + 1;
+        this->last = last;
+        this->next = nullptr;
+    }
+};
+
+int main(int argc, char **argv)
+{
+    bool test = false;
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+        test = true;
+
+    char A[MAX + 1];
+    scanf("%s", A);
+    int n = strlen(A);
+
+    char P[MAX + 1];
+    scanf("%s", P);
+    int k = -1;
+    int next[strlen(P)]{-1};
+
+    for (int i = 1; i <= strlen(P); i++)
+    {
+        while (k > 0 && P[k + 1] != P[i])
+            k = next[k];
+        if (P[i] == P[k + 1])
+            k++;
+        next[i] = k;
+    }
+
+    // test
+    if (test)
+    {
+        cout << "输入测试" << endl;
+        cout << "A: " << A << " strlen(A): " << strlen(A) << endl;
+        cout << "P: " << P << " strlen(P): " << strlen(P) << endl;
+        cout << "P的next数组:" << endl;
+        for (int i = 0; i < strlen(P); i++)
+            cout << next[i] << " ";
+        cout << endl;
+        cout << endl;
+    }
+
+    hole *hole_head = new hole(-1, -1, nullptr);
+    hole *hole_tail = hole_head;
+    hole *ptr = hole_head;
+    int index_P = -1;
+    int index_A = 0;
+    while (index_A < n)
+    {
+        // test
+        if (test)
+        {
+            cout << "index_A: " << index_A << " index_P: " << index_P << endl;
+        }
+
+        while (index_P > -1 && A[index_A] != P[index_P + 1])
+        {
+            index_P = next[index_P];
+        }
+        if (A[index_A] == P[index_P + 1])
+        {
+            index_P++;
+        }
+        if (index_P == strlen(P) - 1)
+        {
+            // test
+            if (test)
+            {
+                cout << endl;
+                cout << "开始挖洞" << endl;
+            }
+
+            int new_hole_begin = index_A - strlen(P) + 1;
+            int new_hole_end = index_A;
+
+            while (true)
+            {
+                if (new_hole_begin >= hole_tail->begin && new_hole_begin <= hole_tail->end)
+                {
+                    //只要进入判断语句，一定存在两个或两个以上的hole
+                    new_hole_begin -= hole_tail->length;
+                    ptr = hole_tail;
+                    hole_tail = hole_tail->last;
+                    delete ptr;
+                    ptr = nullptr;
+                }
+                else
+                {
+                    if (new_hole_begin == hole_tail->end + 1)
+                    {
+                        hole_tail->end = new_hole_end;
+                        hole_tail->length = hole_tail->end - hole_tail->begin + 1;
+                    }
+                    else
+                    {
+                        hole_tail->next = new hole(new_hole_begin, new_hole_end, hole_tail);
+                        hole_tail = hole_tail->next;
+                    }
+                    break;
+                }
+            }
+
+            // test
+            if (test)
+            {
+                cout << "hole_tail: begin: " << hole_tail->begin << " end: " << hole_tail->end << " length: " << hole_tail->length << endl;
+            }
+
+            //将index_A重置到下一轮寻找的起点
+            if (++index_A == n)
+            {
+                // test
+                if (test)
+                {
+                    cout << "运行至A的末尾" << endl;
+                    cout << "hole的链表: " << endl;
+                    ptr = hole_head;
+                    while (ptr != nullptr)
+                    {
+                        cout << "begin: " << ptr->begin << " end: " << ptr->end << " length: " << ptr->length << endl;
+                        ptr = ptr->next;
+                    }
+                    cout << endl;
+                }
+
+                break;
+            }
+            index_A = index_A - strlen(P) + 1;
+            ptr = hole_tail;
+            while (ptr != nullptr)
+            {
+                if (index_A >= ptr->begin && index_A <= ptr->end)
+                {
+                    index_A -= ptr->length;
+                    ptr = ptr->last;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            // test
+            if (test)
+            {
+                cout << "重置后的index_A: " << index_A << endl;
+                cout << "hole的链表: " << endl;
+                ptr = hole_head;
+                while (ptr != nullptr)
+                {
+                    cout << "begin: " << ptr->begin << " end: " << ptr->end << " length: " << ptr->length << endl;
+                    ptr = ptr->next;
+                }
+                cout << endl;
+            }
+
+            index_A--; //减1，下面“++index_A”会加回来，这是为了规避index_A<0的情况
+
+            //将index_P重置为-1
+            index_P = -1;
+        }
+
+        //将index_A增大到下一个可以使用的数组A索引
+        ++index_A;
+        ptr = hole_head; //思考再三还是将ptr重置为hole_head，因为考虑到index_A有可能小于0，洞也可能只有初始化的一个原始洞（或者原始洞的扩展洞）
+        while (ptr != nullptr)
+        {
+            if (index_A >= ptr->begin && index_A <= ptr->end)
+            {
+                index_A = ptr->end + 1;
+                ptr = ptr->next;
+            }
+            else if (index_A > ptr->end)
+            {
+                ptr = ptr->next;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    // test
+    if (test)
+    {
+        cout << "输出" << endl;
+    }
+
+    int index_result = 0;
+    ptr = hole_head;
+    while (index_result < n)
+    {
+        if (ptr == nullptr)
+            cout << A[index_result++];
+        else
+        {
+            if (index_result >= ptr->begin && index_result <= ptr->end)
+            {
+                index_result = ptr->end + 1;
+                ptr = ptr->next;
+            }
+            else if (index_result < ptr->begin)
+            {
+                cout << A[index_result++];
+            }
+            else
+            {
+                ptr = ptr->next;
+            }
+        }
+    }
+    cout << endl;
+
+    //释放内存
+    ptr = hole_head;
+    hole *ptr_next = hole_head->next;
+    while (ptr_next != nullptr)
+    {
+        delete ptr;
+        ptr = ptr_next;
+        ptr_next = ptr_next->next;
+    }
+    delete ptr;
+
+    return 0;
+}

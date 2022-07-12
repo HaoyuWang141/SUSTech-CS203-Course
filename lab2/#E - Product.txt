@@ -1,0 +1,208 @@
+#include <iostream>
+#include <map>
+using namespace std;
+
+int main()
+{
+    size_t n, m, k;
+    cin >> n, m, k;
+    size_t *a = new size_t[4];
+    size_t *b = new size_t[4];
+    for (int i = 0; i < n; i++)
+    {
+        cin >> a[i];
+    }
+    for (int i = 0; i < m; i++)
+    {
+        cin >> b[i];
+    }
+
+    map<size_t, size_t> map_product;
+    size_t product = 0;
+    size_t count = 0;
+    for (size_t i = 0; i < n; i++)
+    {
+        for (size_t j = 0; j < m; j++)
+        {
+            product = a[i] * b[j];
+            if (map_product.count(product) == 1)
+            {
+                map_product[product]++;
+            }
+            else
+            {
+                map_product.insert(pair<size_t, size_t>(product, 1));
+            }
+        }
+    }
+
+    //迭代寻找第k个最小值
+    count = 0;
+    map<size_t, size_t>::iterator it;
+    for (it = map_product.begin(); it != map_product.end(); it++)
+    {
+        count += it->second;
+        if (count >= k)
+        {
+            cout << it->first << endl;
+            break;
+        }
+    }
+
+    delete[] a;
+    delete[] b;
+    return 0;
+}
+
+//堆排序
+#include <iostream>
+#include <map>
+using namespace std;
+
+void max_heapify(size_t *arr, size_t start, size_t end)
+{
+    //建立父节点指标和子节点指标
+    size_t dad = start;
+    size_t son = dad * 2 + 1;
+
+    //若子节点在范围内才作比较
+    while (son <= end)
+    {
+        //先挑出两个子节点（如果有两个的话）中最大的那个
+        if (son + 1 <= end & arr[son + 1] > arr[son])
+        {
+            son++;
+        }
+        if (arr[dad] >= arr[son]) //如果父节点比较大就直接退出
+            return;
+        else
+        {
+            //交换父子内容，然后下一次循环
+            size_t temp = arr[son];
+            arr[son] = arr[dad];
+            arr[dad] = temp;
+
+            dad = son;
+            son = dad * 2 + 1;
+        }
+    }
+}
+
+int main()
+{
+    size_t n, m, k;
+    cin >> n >> m >> k;
+    size_t *a = new size_t[n];
+
+    for (size_t i = 0; i < n; i++)
+    {
+        cin >> a[i];
+    }
+
+    size_t *b = new size_t[m];
+    for (size_t i = 0; i < m; i++)
+    {
+        cin >> b[i];
+    }
+
+    size_t index = 0;
+    size_t *arr = new size_t[n * m];
+    for (size_t i = 0; i < n; i++)
+    {
+        for (size_t j = 0; j < m; j++)
+        {
+            arr[index] = a[i] * b[j];
+            index++;
+        }
+    }
+
+    //初始化整个堆将其变为最大堆
+    for (size_t i = n / 2 - 1; i >= 0; i--)
+    {
+        max_heapify(arr, i, n - 1);
+
+        if(i==0) break;
+    }
+
+    //堆排序（最大堆调整）
+    for (size_t i = n - 1; i >= n - k + 1; i--)
+    {
+        size_t temp = arr[0];
+        arr[0] = arr[n - 1];
+        arr[n - 1] = temp;
+
+        max_heapify(arr, 0, i - 1);
+    }
+    cout << arr[0] << endl;
+
+    delete[] arr;
+    delete[] a;
+    delete[] b;
+    return 0;
+}
+
+//满分：二分法加单指针优化
+#include <iostream>
+using namespace std;
+
+size_t num_less_or_equal(size_t *a, size_t n, size_t *b, size_t m, size_t target)
+{
+    size_t num = 0;
+    size_t p = m - 1;
+
+    for (int i = 0; i < n; i++)
+    {
+        while (a[i] * b[p] > target)
+        {
+            p--;
+            if (p == -1)
+                goto answer;
+        }
+        num += (p + 1);
+    }
+
+answer:
+    return num;
+}
+
+int main()
+{
+    size_t n, m, k;
+    cin >> n >> m >> k;
+    size_t *a = new size_t[n];
+
+    for (size_t i = 0; i < n; i++)
+    {
+        cin >> a[i];
+    }
+
+    size_t *b = new size_t[m];
+    for (size_t i = 0; i < m; i++)
+    {
+        cin >> b[i];
+    }
+
+    size_t left = a[0] * b[0];
+    size_t right = a[n - 1] * b[m - 1];
+    size_t mid = 0;
+
+    while (left < right - 1)
+    {
+        mid = (left + right) / 2;
+
+        if (num_less_or_equal(a, n, b, m, mid) < k)
+        {
+            left = mid;
+        }
+        else
+        {
+            right = mid;
+        }
+    }
+
+    cout << right << endl;
+
+    delete[] a;
+    delete[] b;
+    return 0;
+}

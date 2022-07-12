@@ -1,0 +1,61 @@
+//满分 二分法
+
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+double *coefficient = new double[3];
+double error = 0.00000001;
+
+double func(double x)
+{
+	double y = (coefficient[0]*x*x+coefficient[1]*x+coefficient[2])*exp(x)-pow(M_PI,1.14514);
+	return y;
+}
+
+double zero(double left, double right)
+{
+	if((right - left) < error)
+	{
+		return (left + right) / 2;
+	}
+	else
+	{
+		if(func((left + right) / 2) == 0)
+		{
+			return (left + right) / 2;
+		}
+		else if(func((left + right) / 2) * func(left) < 0)
+		{
+			return zero(left, (left + right) / 2);
+		}
+		else
+		{
+			return zero((left + right) / 2, right);
+		}
+	}
+}
+
+int main() 
+{
+	double left = -10.;
+	double right = 10.;
+	double result = 0;
+	cin>>coefficient[0]>>coefficient[1]>>coefficient[2];
+	
+	if(func(left)==0)
+	{
+		result = func(left);
+	}
+	else if(func(right)==0)
+	{
+		result = func(right);
+	}
+	else
+	{
+		result = zero(left,right);
+	}
+	printf("%.4f", result);
+	
+	return 0;
+}

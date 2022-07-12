@@ -1,0 +1,69 @@
+#include <iostream>
+using namespace std;
+
+struct ListNode
+{
+    ListNode *last;
+    int value;
+    ListNode *next;
+
+    ListNode(ListNode *last = nullptr, int value = 0, ListNode *next = nullptr)
+    {
+        this->last = last;
+        this->value = value;
+        this->next = next;
+    }
+};
+
+int main()
+{
+    int n, m;
+    cin >> n >> m;
+
+    ListNode *head = new ListNode;
+    ListNode *ptr = head;
+
+    for (int i = 1; i <= n; i++)
+    {
+        ptr->next = new ListNode(ptr, i, nullptr);
+        ptr = ptr->next;
+    }
+    ptr->next = head->next;
+    head = head->next;
+    delete head->last;
+    head->last = ptr;
+
+    // // test
+    // ptr = head;
+    // for (int i = 0; i < 10; i++)
+    // {
+    //     cout << ptr->value << " ";
+    //     ptr = ptr->next;
+    // }
+
+    ptr = head;
+    head = nullptr;
+    int count = 1;
+    while (ptr->next->value != ptr->value)
+    {
+        if (count == m)
+        {
+            count = 1;
+            cout << ptr->value << " ";
+            ptr->last->next = ptr->next;
+            ptr->next->last = ptr->last;
+            ListNode *temp = ptr;
+            ptr = ptr->next;
+            delete temp;
+        }
+        else
+        {
+            ptr = ptr->next;
+            count++;
+        }
+    }
+    cout << ptr->value << endl;
+    delete ptr;
+
+    return 0;
+}

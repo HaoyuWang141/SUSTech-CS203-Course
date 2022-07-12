@@ -1,0 +1,131 @@
+//Âú·Ö
+#include <iostream>
+using namespace std;
+
+struct ListNode
+{
+    ListNode *last;
+    int value;
+    ListNode *next;
+    int index;
+
+    ListNode(ListNode *last = nullptr, int value = 0, ListNode *next = nullptr, int index = 0)
+    {
+        this->last = last;
+        this->value = value;
+        this->next = next;
+        this->index = index;
+    }
+};
+
+bool deleteNode(ListNode *ptr)
+{
+    if (ptr == nullptr)
+        return false;
+    if (ptr->last != nullptr)
+    {
+        ptr->last->next = ptr->next;
+    }
+    if (ptr->next != nullptr)
+    {
+        ptr->next->last = ptr->last;
+    }
+    delete ptr;
+    ptr = nullptr;
+    return true;
+}
+
+int main()
+{
+    int n, k;
+    int score = 0;
+    cin >> n >> k;
+
+    ListNode *head = new ListNode;
+    ListNode *ptr = head;
+
+    for (int i = 0; i < n; i++)
+    {
+        cin >> score;
+        ptr->next = new ListNode(ptr, score, nullptr, i);
+        ptr = ptr->next;
+    }
+    head = head->next;
+    deleteNode(head->last);
+
+    ListNode *p_max_score = nullptr;
+    int selection_team = 0;
+    int *arr = new int[n];
+
+    for (int i = 0; i < n; i++)
+        arr[i] = 0;
+
+    while (head != nullptr)
+    {
+        selection_team = selection_team == 1 ? 2 : 1;
+
+        p_max_score = head;
+        ptr = head->next;
+        while (ptr != nullptr)
+        {
+            if (ptr->value > p_max_score->value)
+            {
+                p_max_score = ptr;
+            }
+            ptr = ptr->next;
+        }
+
+        if (p_max_score->last != nullptr)
+        {
+            ListNode *ptr_left = p_max_score->last;
+            for (int i = 0; i < k; i++)
+            {
+                arr[ptr_left->index] = selection_team;
+
+                if (ptr_left->last != nullptr)
+                {
+                    ptr_left = ptr_left->last;
+                    deleteNode(ptr_left->next);
+                }
+                else
+                {
+                    head = ptr_left->next;
+                    deleteNode(ptr_left);
+                    ptr_left = nullptr;
+                    break;
+                }
+            }
+        }
+
+        if (p_max_score->next != nullptr)
+        {
+            ListNode *ptr_right = p_max_score->next;
+            for (int i = 0; i < k; i++)
+            {
+                arr[ptr_right->index] = selection_team;
+                if (ptr_right->next != nullptr)
+                {
+                    ptr_right = ptr_right->next;
+                    deleteNode(ptr_right->last);
+                }
+                else
+                {
+                    deleteNode(ptr_right);
+                    ptr_right = nullptr;
+                    break;
+                }
+            }
+        }
+
+        arr[p_max_score->index] = selection_team;
+        if (head == p_max_score)
+            head = p_max_score->next;
+        deleteNode(p_max_score);
+        p_max_score = nullptr;
+    }
+
+    for (int i = 0; i < n; i++)
+        cout << arr[i];
+
+    return 0;
+}

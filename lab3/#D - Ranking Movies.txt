@@ -1,0 +1,100 @@
+//Âú·Ö
+#include <iostream>
+using namespace std;
+
+int read(int x = 0, int f = 1, char ch = getchar())
+{
+    while (ch < '0' || ch > '9')
+    {
+        if (ch == '-')
+            f = -1;
+        ch = getchar();
+    }
+    while (ch >= '0' & ch <= '9')
+    {
+        x = x * 10 + ch - '0';
+        ch = getchar();
+    }
+    return x * f;
+}
+
+long long int merge_recursive(int *arr, int start, int end)
+{
+    long long int count = 0;
+    if (start >= end)
+    {
+        return 0;
+    }
+    else
+    {
+        int *temp = new int[end - start + 1];
+        count = merge_recursive(arr, start, (start + end) / 2) + merge_recursive(arr, (start + end) / 2 + 1, end);
+        int tick = 0;
+        int left = start;
+        int right = (start + end) / 2 + 1;
+        int index = 0;
+        while (left <= (start + end) / 2 || right <= end)
+        {
+            if (left > (start + end) / 2)
+            {
+                temp[index++] = arr[right++];
+                count += tick;
+                continue;
+            }
+            if (right > end)
+            {
+                temp[index++] = arr[left++];
+                continue;
+            }
+            if (arr[left] <= arr[right])
+            {
+                temp[index++] = arr[left++];
+                tick++;
+            }
+            else
+            {
+                temp[index++] = arr[right++];
+                count += tick;
+            }
+        }
+        index = 0;
+        for (int i = start; i <= end; i++)
+        {
+            arr[i] = temp[index++];
+        }
+        delete[] temp;
+    }
+    return count;
+}
+
+long long int merge_sort(int *arr, int len)
+{
+    return merge_recursive(arr, 0, len - 1);
+}
+
+int main()
+{
+    int n = 0;
+    cin >> n;
+    int *arr1 = new int[n + 1];
+    int *arr2 = new int[n + 1];
+    int index;
+    int value;
+    for (int i = 1; i <= n; i++)
+    {
+        index = read();
+        arr1[index] = i;
+    }
+    for (int i = 0; i < n; i++)
+    {
+        index = read();
+        arr2[i] = arr1[index];
+    }
+
+    long long int similarity = merge_sort(arr2, n);
+
+    cout << similarity << endl;
+    delete[] arr1;
+    delete[] arr2;
+    return 0;
+}

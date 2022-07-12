@@ -1,0 +1,27 @@
+//签到题
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main()
+{
+    int n;
+    int in;
+    cin >> n;
+    bool isHappyJump = true;
+    for (int i = 0; i < n; i++)
+    {
+        cin >> in;
+        if (in > n || in < 1)
+        {
+            isHappyJump = false;
+            break;
+        }
+    }
+    if (isHappyJump)
+        cout << "yes" << endl;
+    else
+        cout << "no" << endl;
+
+    return 0;
+}

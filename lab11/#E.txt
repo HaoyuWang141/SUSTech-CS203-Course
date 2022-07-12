@@ -1,0 +1,65 @@
+// 满分
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+#include <queue>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+const int MAX = 1000000;
+int n, m, x, y, dis[MAX]{0}, q[MAX]{0}, head = 0, tail = 0, n_q = 0;
+ll num[MAX]{0};
+vector<int> vec[MAX];
+
+void bfs()
+{
+    while (n_q > 0)
+    {
+        int c = q[head];
+        head = (head + 1) % MAX;
+        n_q--;
+        for (int i = 0; i < vec[c].size(); i++)
+        {
+            if (dis[vec[c][i]] == 0 && vec[c][i] != 1)
+            {
+                q[tail] = vec[c][i];
+                tail = (tail + 1) % MAX;
+                n_q++;
+                dis[vec[c][i]] = dis[c] + 1;
+                num[vec[c][i]] = num[c];
+            }
+            else if (dis[vec[c][i]] == dis[c] + 1)
+            {
+                num[vec[c][i]] += num[c];
+                num[vec[c][i]] %= 100003;
+            }
+        }
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    cin >> n >> m;
+    for (int i = 0; i < m; i++)
+    {
+        cin >> x >> y;
+        vec[x].push_back(y);
+        vec[y].push_back(x);
+    }
+
+    q[tail++] = 1;
+    n_q++;
+    num[1] = 1;
+    dis[1] = 0;
+    bfs();
+
+    for (int i = 1; i <= n; i++)
+        cout << num[i] << endl;
+    return 0;
+}

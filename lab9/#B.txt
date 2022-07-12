@@ -1,0 +1,79 @@
+// 满分
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+using namespace std;
+bool test = false;
+int n, m, x, y, new_group = 1;
+vector<int> vec[100005];
+int arr[100005]{0};
+bool istree = true;
+bool r = false;
+
+void is_tree(int f, int c)
+{
+    for (int i = 0; i < vec[c].size(); i++)
+    {
+        if (vec[c][i] != f)
+        {
+            if (arr[vec[c][i]] == 1)
+            {
+                r = true;
+                istree = false;
+                return;
+            }
+            else
+            {
+                arr[vec[c][i]] = 1;
+            }
+            is_tree(c, vec[c][i]);
+            if (r == true)
+                return;
+        }
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    cin >> n >> m;
+    if (m != n - 1)
+    {
+        for (int i = 0; i < m; i++)
+        {
+            cin >> x >> y;
+        }
+        cout << "graph" << endl;
+        return 0;
+    }
+    for (int i = 0; i < m; i++)
+    {
+        cin >> x >> y;
+        vec[x].push_back(y);
+        vec[y].push_back(x);
+    }
+    arr[1] = 1;
+    is_tree(-1, 1);
+    if (istree)
+    {
+        for (int i = 1; i <= n; i++)
+        {
+            if (arr[i] == 0)
+            {
+                istree = false;
+                break;
+            }
+        }
+    }
+
+    if (istree)
+        cout << "tree" << endl;
+    else
+        cout << "graph" << endl;
+    return 0;
+}

@@ -1,0 +1,29 @@
+//Âú·Ö ººÅµËş µİ¹é
+
+#include <iostream>
+#include <math.h>
+using namespace std;
+	
+void step(int Number, int A, int B)
+{
+	if(Number==1)
+	{
+		cout<<A<<"->"<<B<<endl;
+	}
+	else
+	{
+		step(Number-1,A,(6-A-B));
+		step(1,A,B);
+		step(Number-1,(6-A-B),B);
+	}
+}
+
+int main() 
+{
+	int floors = 0;
+	cin>>floors;
+	
+	step(floors,1,3);
+	
+	return 0;
+}

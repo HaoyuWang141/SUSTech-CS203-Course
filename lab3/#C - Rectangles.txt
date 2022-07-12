@@ -1,0 +1,719 @@
+//快排 递归。。。卒
+#include <iostream>
+using namespace std;
+
+class Point
+{
+public:
+    int x = 0;
+    int y = 0;
+
+    Point()
+    {
+        x = 0;
+        y = 0;
+    }
+
+    Point(int x, int y)
+    {
+        this->x = x;
+        this->y = y;
+    }
+
+    void swap(Point &a)
+    {
+        Point temp;
+        temp.x = x;
+        temp.y = y;
+        x = a.x;
+        y = a.y;
+        a.x = temp.x;
+        a.y = temp.y;
+    }
+};
+
+enum Coordinate
+{
+    X,
+    Y
+};
+
+void quick_sort_recursive(Point *arr, int start, int end, Coordinate coordinate)
+{
+    if (start >= end)
+        return;
+
+    int index_less = start;
+    int index_more = end - 1;
+    int target = 0;
+    switch (coordinate)
+    {
+    case X:
+        target = arr[end].x;
+
+        while (index_less < index_more)
+        {
+            while (index_less < index_more && arr[index_less].x < target)
+                index_less++;
+            while (index_less < index_more && arr[index_more].x >= target)
+                index_more--;
+            arr[index_less].swap(arr[index_more]);
+        }
+
+        if (arr[index_less].x >= arr[end].x)
+            arr[index_less].swap(arr[end]);
+        else
+            index_less++;
+        break;
+
+    case Y:
+        target = arr[end].y;
+
+        while (index_less < index_more)
+        {
+            while (index_less < index_more && arr[index_less].y < target)
+                index_less++;
+            while (index_less < index_more && arr[index_more].y >= target)
+                index_more--;
+            arr[index_less].swap(arr[index_more]);
+        }
+
+        if (arr[index_less].y >= arr[end].y)
+            arr[index_less].swap(arr[end]);
+        else
+            index_less++;
+
+        break;
+    }
+    quick_sort_recursive(arr, start, index_less - 1, coordinate);
+    quick_sort_recursive(arr, index_less + 1, end, coordinate);
+}
+
+void quick_sort(Point *arr, int len, Coordinate coordinate)
+{
+    quick_sort_recursive(arr, 0, len - 1, coordinate);
+}
+
+int min_area(Point *arr, int start, int end)
+{
+    int S = 0;
+    int x_min = arr[start].x;
+    int x_max = arr[start].x;
+    int y_min = arr[start].y;
+    int y_max = arr[start].y;
+
+    for (int i = start; i <= end; i++)
+    {
+        x_min = arr[i].x < x_min ? arr[i].x : x_min;
+        x_max = arr[i].x > x_max ? arr[i].x : x_max;
+        y_min = arr[i].y < y_min ? arr[i].y : y_min;
+        y_max = arr[i].y > y_max ? arr[i].y : y_max;
+    }
+
+    S = (x_max - x_min) * (y_max - y_min);
+    return S;
+}
+
+int read(int x = 0, int f = 1, char ch = getchar())
+{
+    while (ch < '0' || ch > '9')
+    {
+        if (ch == '-')
+            f = -1;
+        ch = getchar();
+    }
+    while (ch >= '0' & ch <= '9')
+    {
+        x = x * 10 + ch - '0';
+        ch = getchar();
+    }
+    return x * f;
+}
+
+int main()
+{
+    // // test: a1.swap(a2)
+    // Point a1, a2;
+    // a1.x = 0;
+    // a1.y = 0;
+    // a2.x = 1;
+    // a2.y = 1;
+    // cout << "a1: " << a1.x << "  " << a1.y << endl;
+    // cout << "a2: " << a2.x << "  " << a2.y << endl;
+    // a1.swap(a2);
+    // cout << "a1: " << a1.x << "  " << a1.y << endl;
+    // cout << "a2: " << a2.x << "  " << a2.y << endl;
+
+    int n = 0;
+    cin >> n;
+    Point *arr = new Point[n];
+    for (int i = 0; i < n; i++)
+    {
+        arr[i].x = read();
+        arr[i].y = read();
+    }
+
+    int S = 0;
+    int S_min = min_area(arr, 0, n - 1);
+
+    quick_sort(arr, n, X);
+
+    // // test
+    // for (int i = 0; i < n; i++)
+    // {
+    //     cout << arr[i].x << "  " << arr[i].y << endl;
+    // }
+
+    for (int i = 0; i < n - 1; i++)
+    {
+        if (arr[i].x == arr[i + 1].x)
+            continue;
+        S = min_area(arr, 0, i) + min_area(arr, i + 1, n - 1);
+        if (S < S_min)
+            S_min = S;
+
+        // // test
+        // cout << S << endl;
+    }
+
+    quick_sort(arr, n, Y);
+
+    // // test
+    // for (int i = 0; i < n; i++)
+    // {
+    //     cout << arr[i].x << "  " << arr[i].y << endl;
+    // }
+
+    for (int i = 0; i < n - 1; i++)
+    {
+        if (arr[i].y == arr[i + 1].y)
+            continue;
+        S = min_area(arr, 0, i) + min_area(arr, i + 1, n - 1);
+        if (S < S_min)
+            S_min = S;
+
+        // // test
+        // cout << S << endl;
+    }
+
+    cout << S_min << endl;
+
+    delete[] arr;
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//堆排序。。。卒
+#include <iostream>
+using namespace std;
+
+class Point
+{
+public:
+    int x = 0;
+    int y = 0;
+
+    Point()
+    {
+        x = 0;
+        y = 0;
+    }
+
+    Point(int x, int y)
+    {
+        this->x = x;
+        this->y = y;
+    }
+
+    void swap(Point &a)
+    {
+        Point temp;
+        temp.x = x;
+        temp.y = y;
+        x = a.x;
+        y = a.y;
+        a.x = temp.x;
+        a.y = temp.y;
+    }
+};
+
+enum Coordinate
+{
+    X,
+    Y
+};
+
+void max_heaplity(Point *arr, int start, int end, Coordinate coordinate)
+{
+    int dad = start;
+    int son = dad * 2 + 1;
+
+    switch (coordinate)
+    {
+    case X:
+        while (son <= end)
+        {
+            if (son + 1 <= end && arr[son + 1].x > arr[son].x)
+                son++;
+            if (arr[dad].x >= arr[son].x)
+                return;
+            else
+            {
+                arr[dad].swap(arr[son]);
+
+                dad = son;
+                son = dad * 2 + 1;
+            }
+        }
+        break;
+    case Y:
+        while (son <= end)
+        {
+            if (son + 1 <= end && arr[son + 1].y > arr[son].y)
+                son++;
+            if (arr[dad].y >= arr[son].y)
+                return;
+            else
+            {
+                arr[dad].swap(arr[son]);
+
+                dad = son;
+                son = dad * 2 + 1;
+            }
+        }
+        break;
+    }
+}
+
+void heap_sort(Point *arr, int len, Coordinate coordinate)
+{
+    for (int i = len / 2 - 1; i >= 0; i--)
+    {
+        max_heaplity(arr, i, len - 1, coordinate);
+    }
+
+    // for (int i = 0; i < n; i++)
+    //     cout << arr[i] << " ";
+    // cout << endl;
+
+    for (int i = len - 1; i > 0; i--)
+    {
+        arr[0].swap(arr[i]);
+        max_heaplity(arr, 0, i - 1, coordinate);
+    }
+}
+
+int min_area(Point *arr, int start, int end)
+{
+    int S = 0;
+    int x_min = arr[start].x;
+    int x_max = arr[start].x;
+    int y_min = arr[start].y;
+    int y_max = arr[start].y;
+
+    for (int i = start; i <= end; i++)
+    {
+        x_min = arr[i].x < x_min ? arr[i].x : x_min;
+        x_max = arr[i].x > x_max ? arr[i].x : x_max;
+        y_min = arr[i].y < y_min ? arr[i].y : y_min;
+        y_max = arr[i].y > y_max ? arr[i].y : y_max;
+    }
+
+    S = (x_max - x_min) * (y_max - y_min);
+    return S;
+}
+
+int read(int x = 0, int f = 1, char ch = getchar())
+{
+    while (ch < '0' || ch > '9')
+    {
+        if (ch == '-')
+            f = -1;
+        ch = getchar();
+    }
+    while (ch >= '0' & ch <= '9')
+    {
+        x = x * 10 + ch - '0';
+        ch = getchar();
+    }
+    return x * f;
+}
+
+int main()
+{
+    // // test: a1.swap(a2)
+    // Point a1, a2;
+    // a1.x = 0;
+    // a1.y = 0;
+    // a2.x = 1;
+    // a2.y = 1;
+    // cout << "a1: " << a1.x << "  " << a1.y << endl;
+    // cout << "a2: " << a2.x << "  " << a2.y << endl;
+    // a1.swap(a2);
+    // cout << "a1: " << a1.x << "  " << a1.y << endl;
+    // cout << "a2: " << a2.x << "  " << a2.y << endl;
+
+    int n = 0;
+    cin >> n;
+    Point *arr = new Point[n];
+    for (int i = 0; i < n; i++)
+    {
+        arr[i].x = read();
+        arr[i].y = read();
+    }
+
+    int S = 0;
+    int S_min = min_area(arr, 0, n - 1);
+
+    heap_sort(arr, n, X);
+
+    // // test
+    // for (int i = 0; i < n; i++)
+    // {
+    //     cout << arr[i].x << "  " << arr[i].y << endl;
+    // }
+
+    for (int i = 0; i < n - 1; i++)
+    {
+        if (arr[i].x == arr[i + 1].x)
+            continue;
+        S = min_area(arr, 0, i) + min_area(arr, i + 1, n - 1);
+        if (S < S_min)
+            S_min = S;
+
+        // // test
+        // cout << S << endl;
+    }
+
+    heap_sort(arr, n, Y);
+
+    // // test
+    // for (int i = 0; i < n; i++)
+    // {
+    //     cout << arr[i].x << "  " << arr[i].y << endl;
+    // }
+
+    for (int i = 0; i < n - 1; i++)
+    {
+        if (arr[i].y == arr[i + 1].y)
+            continue;
+        S = min_area(arr, 0, i) + min_area(arr, i + 1, n - 1);
+        if (S < S_min)
+            S_min = S;
+
+        // // test
+        // cout << S << endl;
+    }
+
+    cout << S_min << endl;
+
+    delete[] arr;
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//时间复杂度为nlogn的方法
+#include <iostream>
+using namespace std;
+
+class Point
+{
+public:
+    size_t x = 0;
+    size_t y = 0;
+
+    Point()
+    {
+        x = 0;
+        y = 0;
+    }
+
+    Point(size_t x, size_t y)
+    {
+        this->x = x;
+        this->y = y;
+    }
+
+    void swap(Point &a)
+    {
+        Point temp;
+        temp.x = x;
+        temp.y = y;
+        x = a.x;
+        y = a.y;
+        a.x = temp.x;
+        a.y = temp.y;
+    }
+};
+
+class Value
+{
+public:
+    size_t x_min;
+    size_t x_max;
+    size_t y_min;
+    size_t y_max;
+};
+
+enum Coordinate
+{
+    X,
+    Y
+};
+
+void max_heaplity(Point *arr, size_t start, size_t end, Coordinate coordinate)
+{
+    int dad = start;
+    int son = dad * 2 + 1;
+
+    switch (coordinate)
+    {
+    case X:
+        while (son <= end)
+        {
+            if (son + 1 <= end && arr[son + 1].x > arr[son].x)
+                son++;
+            if (arr[dad].x >= arr[son].x)
+                return;
+            else
+            {
+                arr[dad].swap(arr[son]);
+
+                dad = son;
+                son = dad * 2 + 1;
+            }
+        }
+        break;
+    case Y:
+        while (son <= end)
+        {
+            if (son + 1 <= end && arr[son + 1].y > arr[son].y)
+                son++;
+            if (arr[dad].y >= arr[son].y)
+                return;
+            else
+            {
+                arr[dad].swap(arr[son]);
+
+                dad = son;
+                son = dad * 2 + 1;
+            }
+        }
+        break;
+    }
+}
+
+void heap_sort(Point *arr, int len, Coordinate coordinate)
+{
+    for (int i = len / 2 - 1; i >= 0; i--)
+    {
+        max_heaplity(arr, i, len - 1, coordinate);
+    }
+
+    // for (int i = 0; i < n; i++)
+    //     cout << arr[i] << " ";
+    // cout << endl;
+
+    for (int i = len - 1; i > 0; i--)
+    {
+        arr[0].swap(arr[i]);
+        max_heaplity(arr, 0, i - 1, coordinate);
+    }
+}
+
+size_t min_area(Point *arr, int start, int end)
+{
+    size_t S = 0;
+    size_t x_min = arr[start].x;
+    size_t x_max = arr[start].x;
+    size_t y_min = arr[start].y;
+    size_t y_max = arr[start].y;
+
+    for (int i = start; i <= end; i++)
+    {
+        x_min = arr[i].x < x_min ? arr[i].x : x_min;
+        x_max = arr[i].x > x_max ? arr[i].x : x_max;
+        y_min = arr[i].y < y_min ? arr[i].y : y_min;
+        y_max = arr[i].y > y_max ? arr[i].y : y_max;
+    }
+
+    S = (x_max - x_min) * (y_max - y_min);
+    return S;
+}
+
+int read(int x = 0, int f = 1, char ch = getchar())
+{
+    while (ch < '0' || ch > '9')
+    {
+        if (ch == '-')
+            f = -1;
+        ch = getchar();
+    }
+    while (ch >= '0' & ch <= '9')
+    {
+        x = x * 10 + ch - '0';
+        ch = getchar();
+    }
+    return x * f;
+}
+
+int main()
+{
+    // // test: a1.swap(a2)
+    // Point a1, a2;
+    // a1.x = 0;
+    // a1.y = 0;
+    // a2.x = 1;
+    // a2.y = 1;
+    // cout << "a1: " << a1.x << "  " << a1.y << endl;
+    // cout << "a2: " << a2.x << "  " << a2.y << endl;
+    // a1.swap(a2);
+    // cout << "a1: " << a1.x << "  " << a1.y << endl;
+    // cout << "a2: " << a2.x << "  " << a2.y << endl;
+
+    int n = 0;
+    cin >> n;
+    Point *arr = new Point[n];
+    for (int i = 0; i < n; i++)
+    {
+        arr[i].x = read();
+        arr[i].y = read();
+    }
+
+    size_t S = 0;
+    size_t S_min = min_area(arr, 0, n - 1);
+
+    size_t x_min = 0;
+    size_t x_max = 0;
+    size_t y_min = 0;
+    size_t y_max = 0;
+
+    heap_sort(arr, n, X);
+
+    // // test
+    // for (int i = 0; i < n; i++)
+    // {
+    //     cout << arr[i].x << "  " << arr[i].y << endl;
+    // }
+
+    x_min = arr[0].x;
+    y_min = arr[0].y;
+    y_max = arr[0].y;
+    Value *value_x_increase = new Value[n];
+    for (int i = 0; i < n; i++)
+    {
+        x_max = arr[i].x;
+        y_min = arr[i].y < y_min ? arr[i].y : y_min;
+        y_max = arr[i].y > y_max ? arr[i].y : y_max;
+
+        value_x_increase[i].y_min = y_min;
+        value_x_increase[i].y_max = y_max;
+        value_x_increase[i].x_min = x_min;
+        value_x_increase[i].x_max = x_max;
+    }
+
+    x_max = arr[n - 1].x;
+    y_min = arr[n - 1].y;
+    y_max = arr[n - 1].y;
+    
+    for (int i = n - 1; i > 0; i--)
+    {
+        x_min = arr[i].x;
+        y_min = arr[i].y < y_min ? arr[i].y : y_min;
+        y_max = arr[i].y > y_max ? arr[i].y : y_max;
+
+        S = (y_max - y_min) * (x_max - x_min) +
+            (value_x_increase[i - 1].y_max - value_x_increase[i - 1].y_min) * (value_x_increase[i - 1].x_max - value_x_increase[i - 1].x_min);
+        if (S < S_min)
+            S_min = S;
+    }
+
+    heap_sort(arr, n, Y);
+
+    // // test
+    // for (int i = 0; i < n; i++)
+    // {
+    //     cout << arr[i].x << "  " << arr[i].y << endl;
+    // }
+
+    y_min = arr[0].y;
+    x_min = arr[0].x;
+    x_max = arr[0].x;
+    Value *value_y_increase = new Value[n];
+    for (int i = 0; i < n; i++)
+    {
+        y_max = arr[i].y;
+        x_min = arr[i].x < x_min ? arr[i].x : x_min;
+        x_max = arr[i].x > x_max ? arr[i].x : x_max;
+
+        value_y_increase[i].x_min = x_min;
+        value_y_increase[i].x_max = x_max;
+        value_y_increase[i].y_min = y_min;
+        value_y_increase[i].y_max = y_max;
+    }
+
+    y_max = arr[n - 1].y;
+    x_min = arr[n - 1].x;
+    x_max = arr[n - 1].x;
+    
+    for (int i = n - 1; i > 0; i--)
+    {
+        y_min = arr[i].y;
+        x_min = arr[i].x < x_min ? arr[i].x : x_min;
+        x_max = arr[i].x > x_max ? arr[i].x : x_max;
+
+        S = (y_max - y_min) * (x_max - x_min) +
+            (value_y_increase[i - 1].y_max - value_y_increase[i - 1].y_min) * (value_y_increase[i - 1].x_max - value_y_increase[i - 1].x_min);
+        if (S < S_min)
+            S_min = S;
+    }
+
+    cout << S_min << endl;
+
+    delete[] value_x_increase;
+    delete[] value_y_increase;
+    delete[] arr;
+    return 0;
+}

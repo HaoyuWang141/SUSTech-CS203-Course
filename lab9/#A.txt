@@ -1,0 +1,40 @@
+// 满分
+#include <iostream>
+#include <cstring>
+#include <cmath>
+using namespace std;
+bool test = false;
+int matrix[1005][1005];
+int n, m, x, y, z;
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    cin >> n >> m;
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= n; j++)
+        {
+            matrix[i][j] = -1;
+        }
+    }
+    for (int i = 0; i < m; i++)
+    {
+        cin >> x >> y >> z;
+        matrix[x][y] = z;
+    }
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= n; j++)
+        {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    return 0;
+}

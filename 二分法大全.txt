@@ -1,0 +1,44 @@
+!!注意最后l和r贴贴的时候会不会死循环！
+
+//
+While(l < r)
+{
+	int mid = (l + r) / 2;
+	if(check(mid)) 
+	{
+		r = mid;
+	}
+	else
+	{
+		l = mid + 1;
+	}
+}
+
+//
+While(l < r)
+{
+	int mid = (l + r + 1) / 2;
+	if(check(mid)) 
+	{
+		l = mid;
+	}
+	else
+	{
+		r = mid - 1;
+	}
+}
+
+//
+While(l<=r)
+{
+	int mid = (l + r) / 2;
+	if(check(mid)) 
+	{
+		l = mid + 1;
+	}
+	else
+	{
+		r = mid - 1;
+	}
+}
+index = left;

@@ -1,0 +1,114 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+class student
+{
+private:
+	string name;
+	int y;
+	int m;
+	int d;
+public:
+	bool operator>(const students &stu) const //A > B : A is older than B.
+	{
+		if(this->y > stu.y) return false;
+		else if(this->y < stu.y) return true
+		else
+		{
+			if(this->m > stu.m) return false;
+			else if(this->m < stu.m) return true;
+			else
+			{
+				if(this->d < stu.d) return true;
+			}
+		}
+		return false;
+	}
+
+	bool operator<(const students &stu) const
+	{
+		if(this->y < stu.y) return false;
+		else if(this->y > stu.y) return true
+		else
+		{
+			if(this->m < stu.m) return false;
+			else if(this->m > stu.m) return true;
+			else
+			{
+				if(this->d > stu.d) return true;
+			}
+		}
+		return false;
+	}
+
+	bool operator==(const students &stu) const
+	{
+		if(this->y = stu.y && this->m = stu.m && this->d = stu.d) return true;
+		return false;
+	}
+
+	student & operator=(const students &stu)
+	{
+		this->name = stu.name;
+		this->y = stu.y;
+		this->m = stu.m;
+		this->d = stu.d;
+		return *this;
+	}
+
+	friend ostream & ostream::operator<<(ostream &os, const students &stu)
+	{
+		os << stu.name << endl;
+		return os;
+	}
+};
+
+void sort(student *stu)
+{
+	student temp;
+	for(int i = 1; i < n; i++)
+	{
+		for(int j = 0; j < n - i; j++)
+		{
+			if(stu[j] > stu[j+1])
+			{
+				temp = stu[j];
+				stu[j] = stu[j+1];
+				stu[j+1] = temp;
+			}
+		}
+	}
+}
+
+int main()
+{
+	int n = 0;
+	cin >> n;
+	student stu = new student[n];
+	for(int i = 1; i < n; i++)
+	{
+		cin >> stu[i].name >> stu[i].y >> stu[i].m >> stu[i].d;
+	}
+
+	sort(stu);
+
+	for(int i = 0; i < n; i++)
+	{
+		cout << stu[i].name <<endl;
+	}
+
+	return 0;
+}
+
+#test:
+n
+a 1 1 1
+b 1 1 2
+c 1 2 1
+d 1 2 2
+e 2 1 1
+f 2 1 2
+g 2 2 1
+h 2 2 2
+i 3 0 0

@@ -1,0 +1,89 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+bool test = false;
+const int MAX = 1000005;
+int Q, q, N = -1;
+int arr[MAX];
+
+void swap(int a, int b)
+{
+    if (a < 0 || a > N || b < 0 || b > N)
+    {
+        cerr << "something wrong" << endl;
+        return;
+    }
+
+    int temp = arr[a];
+    arr[a] = arr[b];
+    arr[b] = temp;
+}
+
+void heap_sort(int dad, int son)
+{
+    if (dad < 0)
+        return;
+    else
+    {
+        if (arr[dad] > arr[son])
+        {
+            swap(dad, son);
+            heap_sort((dad - 1) / 2, dad);
+        }
+    }
+}
+
+void heap_min(int c)
+{
+    if (c * 2 + 1 > N)
+        return;
+    else
+    {
+        int min_son = c * 2 + 1;
+        if (c * 2 + 2 <= N)
+        {
+            min_son = arr[c * 2 + 1] < arr[c * 2 + 2] ? (c * 2 + 1) : (c * 2 + 2);
+        }
+        if (arr[c] > arr[min_son])
+        {
+            swap(c, min_son);
+            heap_min(min_son);
+        }
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+
+    cin >> Q;
+    for (int i = 0; i < Q; i++)
+    {
+        cin >> q;
+        switch (q)
+        {
+        case 1: // insert
+            cin >> arr[++N];
+            heap_sort((N - 1) / 2, N);
+            if (test)
+            {
+                for (int i = 0; i <= N; i++)
+                {
+                    cout << arr[i];
+                }
+            }
+            break;
+        case 2: // print
+            cout << arr[0] << endl;
+            break;
+        case 3: // delete
+            arr[0] = arr[N--];
+            heap_min(0);
+            break;
+        }
+    }
+}

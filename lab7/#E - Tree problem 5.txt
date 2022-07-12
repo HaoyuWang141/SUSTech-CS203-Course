@@ -1,0 +1,139 @@
+#include <iostream>
+#include <cstring>
+#include <queue>
+using namespace std;
+bool test = false;
+typedef long long ll;
+const int MAX = 200005;
+struct edge
+{
+    int l, r;
+    ll vl, vr;
+    edge()
+    {
+        this->l = 0;
+        this->r = 0;
+        this->vl = 0;
+        this->vr = 0;
+    }
+};
+struct E
+{
+    int v;
+    ll add;
+    ll sub;
+    E *nxt;
+    E(int v = -1, ll add = 0, E *nxt = nullptr)
+    {
+        this->v = v;
+        this->add = add;
+        this->sub = 0;
+        this->nxt = nxt;
+    }
+};
+int N, Q;
+edge e[MAX];
+ll vv[MAX]{0};
+E *ve[MAX];
+
+void bbb(int c, int f, ll sum)
+{
+
+    E *p = ve[c];
+    while (p != nullptr)
+    {
+        if (p->v != f)
+            bbb(p->v, c, sum + (vv[c] - p->sub) + p->add);
+        p = p->nxt;
+    }
+    vv[c] += sum;
+}
+
+ll aaa(int c, int f)
+{
+    if (test)
+        cout << c << " begin" << endl;
+    ll temp = 0;
+    E *p = ve[c], *pf = nullptr;
+    while (p != nullptr)
+    {
+        if (p->v != f)
+        {
+            vv[c] += temp = aaa(p->v, c);
+            p->sub = temp;
+        }
+        else
+            pf = p;
+        p = p->nxt;
+    }
+    if (test)
+        cout << c << " end return: " << pf->add << endl;
+    if (pf == nullptr)
+        return 0;
+    return pf->add + vv[c];
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test patten" << endl;
+    }
+
+    cin >> N;
+    if (N <= 0)
+    {
+        cerr << "something wrong" << endl;
+        return 0;
+    }
+    for (int i = 1; i < N; i++)
+    {
+        int a, b;
+        cin >> a >> b;
+        e[i].l = a;
+        e[i].r = b;
+    }
+    cin >> Q;
+    for (int i = 0; i < Q; i++)
+    {
+        int o, ei;
+        ll x;
+        cin >> o >> ei >> x;
+        if (o == 1)
+            e[ei].vl += x;
+        else if (o == 2)
+            e[ei].vr += x;
+        else
+        {
+            cerr << "something wrong" << endl;
+            return 0;
+        }
+    }
+    for (int i = 1; i <= N; i++)
+    {
+        ve[e[i].l] = new E(e[i].r, e[i].vr, ve[e[i].l]);
+        ve[e[i].r] = new E(e[i].l, e[i].vl, ve[e[i].r]);
+    }
+    if (test)
+    {
+        for (int i = 1; i <= N; i++)
+        {
+            E *p = ve[i];
+            cout << "vertice: " << i << " connected with ";
+            while (p != nullptr)
+            {
+                cout << p->v << " ";
+                p = p->nxt;
+            }
+            cout << endl;
+        }
+    }
+
+    aaa(1, -1);
+    bbb(1, -1, 0);
+    for (int i = 1; i <= N; i++)
+        cout << vv[i] << endl;
+
+    return 0;
+}

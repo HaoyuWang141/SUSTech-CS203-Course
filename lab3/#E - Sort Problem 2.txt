@@ -1,0 +1,181 @@
+//¿ìÅÅ£¬²Î¿¼£ºhttps://zhuanlan.zhihu.com/p/123416868
+#include <iostream>
+using namespace std;
+
+static long long int min_value;
+
+class Map
+{
+public:
+    long long int key;
+    long long int value;
+    bool deal;
+
+    Map()
+    {
+        key = 0;
+        value = 0;
+        deal = false;
+    }
+
+    Map(long long int key, long long int value)
+    {
+        this->key = key;
+        this->value = value;
+        deal = false;
+    }
+
+    Map(const Map &map)
+    {
+        this->key = map.key;
+        this->value = map.value;
+        this->deal = map.deal;
+    }
+
+    void swap(Map &map)
+    {
+        Map temp(map);
+        map.key = this->key;
+        map.value = this->value;
+        map.deal = this->deal;
+        this->key = temp.key;
+        this->value = temp.value;
+        this->deal = temp.deal;
+    }
+
+    Map *operator=(const Map &map)
+    {
+        this->key = map.key;
+        this->value = map.value;
+        this->deal = map.deal;
+        return this;
+    }
+};
+
+long long int read(int x = 0, int f = 1, char ch = getchar())
+{
+    while (ch < '0' || ch > '9')
+    {
+        if (ch == '-')
+            f = -1;
+        ch = getchar();
+    }
+    while (ch >= '0' & ch <= '9')
+    {
+        x = x * 10 + ch - '0';
+        ch = getchar();
+    }
+    return x * f;
+}
+
+void quick_sort_recursive(Map *arr_map, int start, int end)
+{
+    if (start >= end)
+        return;
+
+    int target = arr_map[end].value;
+    int index_less = start;
+    int index_more = end - 1;
+
+    while (index_less < index_more)
+    {
+        while (index_less < index_more && arr_map[index_less].value < target)
+            index_less++;
+        while (index_less < index_more && arr_map[index_more].value >= target)
+            index_more--;
+        arr_map[index_less].swap(arr_map[index_more]);
+    }
+
+    if (arr_map[index_less].value >= arr_map[end].value)
+        arr_map[index_less].swap(arr_map[end]);
+    else
+        index_less++;
+
+    quick_sort_recursive(arr_map, start, index_less - 1);
+    quick_sort_recursive(arr_map, index_less + 1, end);
+}
+
+void quick_sort(Map *map, int len)
+{
+    quick_sort_recursive(map, 0, len - 1);
+}
+
+long long int Current_Circle_Cost(Map *arr_map, int index)
+{
+    arr_map[index].deal = true;
+    long long int count = 1;
+    long long int sum_of_value = arr_map[index].value;
+    long long int current_min = arr_map[index].value;
+    index = arr_map[index].key;
+
+    // //test
+    // cout << "sum_of_value: " << sum_of_value << "  current_min: " << current_min << endl;
+
+    while (arr_map[index].deal == false)
+    {
+        arr_map[index].deal = true;
+        count++;
+        sum_of_value += arr_map[index].value;
+        current_min = arr_map[index].value < current_min ? arr_map[index].value : current_min;
+        index = arr_map[index].key;
+
+        // //test
+        // cout << "index:" << index << "  arr_map[index].deal:" << arr_map[index].deal << endl;
+        // cout << "sum_of_value: " << sum_of_value << "  current_min: " << current_min << endl;
+    }
+    long long int cost1 = sum_of_value + current_min + (count + 1) * min_value;
+    long long int cost2 = sum_of_value + (count - 2) * current_min;
+
+    long long int cost = cost1 < cost2 ? cost1 : cost2;
+
+    // // test
+    // cout << "cost1: " << cost1 << "  cost2: " << cost2 << endl;
+
+    return cost;
+}
+
+int main()
+{
+    int n = 0;
+    cin >> n;
+    Map *arr_map = new Map[n];
+    for (int i = 0; i < n; i++)
+    {
+        arr_map[i].key = i;
+        arr_map[i].value = read();
+
+        if (i == 0)
+            min_value = arr_map[i].value;
+        else
+            min_value = arr_map[i].value < min_value ? arr_map[i].value : min_value;
+    }
+    // cout << min_value << endl;
+
+    quick_sort(arr_map, n);
+
+    // // test
+    // for (int i = 0; i < n; i++)
+    // {
+    //     cout << "key: " << arr_map[i].key << " value: " << arr_map[i].value << endl;
+    // }
+    // cout << endl;
+
+    long long int Total_Cost = 0;
+    for (int i = 0; i < n; i++)
+    {
+        if (arr_map[i].deal == true)
+            continue;
+        else
+        {
+            Total_Cost += Current_Circle_Cost(arr_map, i);
+
+            // //test
+            // cout << "Total_Cost:" << Total_Cost << endl;
+        }
+    }
+
+    cout << Total_Cost << endl;
+
+    delete[] arr_map;
+    return 0;
+}

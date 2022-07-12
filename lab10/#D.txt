@@ -1,0 +1,76 @@
+// 90
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+#include <queue>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+const int MAX = 200005;
+ll N, M, a, b, vis[MAX]{0}, P[MAX]{0}, p = 0, in_size[MAX]{0};
+vector<ll> in[MAX], out[MAX];
+priority_queue<ll, vector<ll>, greater<ll>> q;
+bool wrong = false;
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    cin >> N >> M;
+    for (ll i = 0; i < M; i++)
+    {
+        cin >> a >> b;
+        for (int i = 0; i < out[a].size(); i++)
+        {
+            if (out[a][i] == b)
+                continue;
+        }
+        out[a].push_back(b);
+        in[b].push_back(a);
+    }
+
+    for (ll i = 1; i <= N; i++)
+    {
+        if (in[i].empty())
+            q.push(i);
+        in_size[i] = in[i].size();
+    }
+
+    if (q.empty())
+        wrong = true;
+
+    while (!q.empty())
+    {
+        ll c = q.top();
+        q.pop();
+        P[++p] = c;
+        vis[c] = 1;
+        for (ll i = 0; i < out[c].size(); i++)
+        {
+            if (vis[out[c][i]] == 1)
+            {
+                wrong = true;
+                goto result;
+            }
+            ll s = out[c][i];
+            in_size[s]--;
+            if (in_size[s] == 0)
+            {
+                q.push(s);
+            }
+        }
+    }
+
+result:
+    if (wrong)
+        cout << -1;
+    else
+        for (ll i = 1; i <= N; i++)
+            cout << P[i] << " ";
+    cout << endl;
+    return 0;
+}

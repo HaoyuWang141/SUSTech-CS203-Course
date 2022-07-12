@@ -1,0 +1,78 @@
+// Âú·Ö
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+#include <queue>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+const int MAX = 200005;
+ll N, M, a, b, vis[MAX]{0}, go[MAX]{0};
+vector<ll> in[MAX], out[MAX];
+priority_queue<ll, vector<ll>, greater<ll>> q;
+bool wrong = false;
+
+bool dfs(int f, int c)
+{
+    if (test)
+        cout << "begin " << c << endl;
+    if (vis[c] == 1) // 1 no cycle
+        return false;
+    else if (vis[c] == 2) // 2 yes cycle
+        return true;
+    else
+    {
+        if (go[c] == 1)
+        {
+            go[c] = 0;
+            vis[c] = 2;
+            return true;
+        }
+        go[c] = 1;
+        for (int i = 0; i < out[c].size(); i++)
+        {
+            if (out[c][i] != f)
+            {
+                if (dfs(c, out[c][i]))
+                {
+                    go[c] = 0;
+                    vis[c] = 2;
+                    return true;
+                }
+            }
+            else
+            {
+                go[c] = 0;
+                vis[c] = 2;
+                return true;
+            }
+        }
+    }
+    go[c] = 0;
+    vis[c] = 1;
+    return false;
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    cin >> N >> M;
+    for (int i = 0; i < M; i++)
+    {
+        cin >> a >> b;
+        out[a].push_back(b);
+    }
+    for (int i = 1; i <= N; i++)
+        dfs(-1, i);
+    int result = 0;
+    for (int i = 1; i <= N; i++)
+        if (vis[i] == 2)
+            result++;
+    cout << result << endl;
+    return 0;
+}

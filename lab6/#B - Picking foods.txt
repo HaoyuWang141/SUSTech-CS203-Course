@@ -1,0 +1,127 @@
+//Âú·Ö
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+struct node
+{
+    int v;
+    node *next;
+
+    node(int v = 0)
+    {
+        this->v = v;
+        this->next = nullptr;
+    }
+};
+
+int main(int argc, char **argv)
+{
+    bool test = false;
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+        test = true;
+
+    int n;
+    cin >> n;
+    if (n <= 0)
+    {
+        cout << 0 << endl;
+        cerr << "something wrong" << endl;
+        return 0;
+    }
+
+    char temp;
+    cin >> temp;
+    bool is_positive = true;
+    node *head = nullptr;
+    if (temp == '0')
+    {
+        is_positive = true;
+        head = new node(1);
+    }
+    else
+    {
+        is_positive = false;
+        head = new node(-1);
+    }
+    node *ptr = head;
+    for (int i = 1; i < n; i++)
+    {
+        cin >> temp;
+
+        if (test)
+        {
+            cout << "temp: " << temp << endl;
+            cout << "is_positive: " << is_positive << endl;
+        }
+
+        if (temp == '0' && is_positive == true)
+        {
+            ptr->v++;
+        }
+        else if (temp == '0' && is_positive == false)
+        {
+            ptr->next = new node(1);
+            ptr = ptr->next;
+            is_positive = true;
+        }
+        else if (temp == '1' && is_positive == false)
+        {
+            ptr->v--;
+        }
+        else if (temp == '1' && is_positive == true)
+        {
+            ptr->next = new node(-1);
+            ptr = ptr->next;
+            is_positive = false;
+        }
+        else
+        {
+            cout << "something wrong" << endl;
+            return 0;
+        }
+    }
+
+    if (test)
+    {
+        ptr = head;
+        while (ptr != nullptr)
+        {
+            cout << ptr->v << " ";
+            ptr = ptr->next;
+        }
+        cout << endl;
+    }
+
+    int max = -1;
+    int sum = 0;
+    ptr = head;
+    while (ptr != nullptr)
+    {
+        if (sum + ptr->v > 0)
+        {
+            sum += ptr->v;
+            ptr = ptr->next;
+            max = sum > max ? sum : max;
+        }
+        else
+        {
+            ptr = ptr->next;
+            sum = 0;
+        }
+    }
+    cout << max << endl;
+
+    ptr = head;
+    node *ptr_next = ptr->next;
+    while (ptr->next != nullptr)
+    {
+        delete ptr;
+        ptr = ptr_next;
+        ptr_next = ptr->next;
+    }
+    delete ptr;
+    ptr = nullptr;
+    ptr_next = nullptr;
+    return 0;
+}

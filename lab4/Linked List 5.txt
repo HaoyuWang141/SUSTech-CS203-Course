@@ -1,0 +1,1284 @@
+//直接方法：单向链表
+#include <iostream>
+using namespace std;
+
+struct ListNode
+{
+    char value;
+    ListNode *last;
+    ListNode *next;
+
+    ListNode(char value = 0, ListNode *last = nullptr, ListNode *next = nullptr)
+    {
+        this->value = value;
+        this->last = last;
+        this->next = next;
+    }
+
+    void insertNode(char ch)
+    {
+        ListNode *newNode = new ListNode(ch, this, this->next);
+        this->next->last = newNode;
+        this->next = newNode;
+    }
+};
+
+bool deleteNode(ListNode *ptr)
+{
+    if (ptr == nullptr)
+        return false;
+    if (ptr->last != nullptr)
+    {
+        ptr->last->next = ptr->next;
+    }
+    if (ptr->next != nullptr)
+    {
+        ptr->next->last = ptr->last;
+    }
+    delete ptr;
+    ptr = nullptr;
+    return true;
+}
+
+struct Operactor
+{
+    int operactor;
+    char ch;
+    int p;
+    int l;
+    int r;
+
+    Operactor()
+    {
+        operactor = 0;
+        ch = 0;
+        p = 0;
+        l = 0;
+        r = 0;
+    }
+};
+
+int main()
+{
+    ListNode *head = new ListNode;
+    ListNode *ptr = head;
+    char x = cin.get();
+    while (x != '\n')
+    {
+        ptr->next = new ListNode(x, ptr, nullptr);
+        ptr = ptr->next;
+        x = cin.get();
+    }
+    ptr = nullptr;
+
+    // // test
+    // ptr = head->next;
+    // while (ptr != nullptr)
+    // {
+    //     cout << ptr->value;
+    //     ptr = ptr->next;
+    // }
+    // cout << endl;
+    // ptr = nullptr;
+
+    int n;
+    cin >> n;
+    Operactor *o = new Operactor[n];
+    for (int i = 0; i < n; i++)
+    {
+        cin >> o[i].operactor;
+        switch (o[i].operactor)
+        {
+        case 1:
+            cin >> o[i].ch >> o[i].p;
+            break;
+        case 2:
+            cin >> o[i].p;
+            break;
+        case 3:
+            cin >> o[i].l >> o[i].r;
+            break;
+        }
+    }
+
+    // // test
+    // for (int i = 0; i < n; i++)
+    // {
+    //     cout << o[i].operactor << " ";
+    //     switch (o[i].operactor)
+    //     {
+    //     case 1:
+    //         cout << o[i].ch << " " << o[i].p;
+    //         break;
+    //     case 2:
+    //         cout << o[i].p;
+    //         break;
+    //     case 3:
+    //         cout << o[i].l << " " << o[i].r;
+    //         break;
+    //     }
+    //     cout << endl;
+    // }
+
+    for (int i = 0; i < n; i++)
+    {
+        switch (o[i].operactor)
+        {
+        case 1:
+            ptr = head;
+            for (int j = 1; j < o[i].p; j++)
+            {
+                ptr = ptr->next;
+            }
+            ptr->insertNode(o[i].ch);
+
+            // // test
+            // ptr = head->next;
+            // while (ptr != nullptr)
+            // {
+            //     cout << ptr->value;
+            //     ptr = ptr->next;
+            // }
+            // cout << endl;
+            // ptr = nullptr;
+
+            break;
+        case 2:
+            ptr = head;
+            for (int j = 0; j < o[i].p; j++)
+            {
+                ptr = ptr->next;
+            }
+            cout << ptr->value << endl;
+
+            // // test
+            // ptr = head->next;
+            // while (ptr != nullptr)
+            // {
+            //     cout << ptr->value;
+            //     ptr = ptr->next;
+            // }
+            // cout << endl;
+            // ptr = nullptr;
+
+            break;
+        case 3:
+            ptr = head;
+            for (int j = 0; j < o[i].l; j++)
+            {
+                ptr = ptr->next;
+            }
+            for (int j = o[i].l; j <= o[i].r; j++)
+            {
+                ptr->value = 'a' + 'z' - ptr->value;
+                ptr = ptr->next;
+            }
+
+            // // test
+            // ptr = head->next;
+            // while (ptr != nullptr)
+            // {
+            //     cout << ptr->value;
+            //     ptr = ptr->next;
+            // }
+            // cout << endl;
+            // ptr = nullptr;
+
+            // break;
+        }
+    }
+
+    delete[] o;
+    // ptr = head;
+    // while (ptr != nullptr)
+    // {
+    //     ptr = ptr->next;
+    //     deleteNode(ptr->last);
+    // }
+    return 0;
+}
+
+//复杂算法
+#include <iostream>
+using namespace std;
+
+struct ListNode
+{
+    char value;
+    ListNode *next;
+    ListNode *last;
+    int index;
+
+    ListNode()
+    {
+        this->value = 0;
+        this->next = nullptr;
+        this->index = -1;
+    }
+
+    ListNode(char value, ListNode *last, ListNode *next, int index)
+    {
+        this->value = value;
+        this->next = next;
+        this->last = last;
+        this->index = index;
+    }
+
+    void insert(char value, int index)
+    {
+        if (this == nullptr)
+            return;
+        ListNode *newNode = new ListNode(value, this, this->next, index);
+        this->next->last = newNode;
+        this->next = newNode;
+    }
+};
+
+struct Operactor
+{
+    int operactor;
+    char ch;
+    int p;
+    int l;
+    int r;
+
+    Operactor()
+    {
+        operactor = 0;
+        ch = 0;
+        p = 0;
+        l = 0;
+        r = 0;
+    }
+};
+
+ListNode *find(ListNode **arr, ListNode *head_notebook, int p)
+{
+    
+    // cout << "find" << endl;
+    int index = p;
+    int back = 0;
+    int num = 0;
+    ListNode *ptr = head_notebook->next;
+    while (ptr != nullptr)
+    {
+        num = num + ptr->index - ptr->last->index;
+        if (p < num)
+        {
+            index = ptr->last->index + p - num;
+            back = 0;
+            break;
+        }
+        else if (p > num + ptr->value)
+        {
+            num = num + ptr->value;
+            if (ptr->next == nullptr)
+            {
+                index = ptr->index + p - num;
+                back = 0;
+            }
+            ptr = ptr->next;
+        }
+        else
+        {
+            index = ptr->index;
+            back = num + ptr->value - p;
+            break;
+        }
+    }
+
+    // cout << "index: " << index << endl;
+    // cout << "back: " << back << endl;
+
+    ptr = arr[index];
+    for (int i = 0; i < back; i++)
+        ptr = ptr->last;
+    // cout << "ptr index: " << ptr->index << "  ptr value: " << ptr->value << endl;
+    // cout << endl;
+    return ptr;
+}
+
+int main()
+{
+    ListNode *ptr = nullptr;
+
+    ListNode *head = new ListNode;
+    ptr = head;
+    char x = cin.get();
+    int index = 1;
+    while (x != '\n')
+    {
+        ptr->next = new ListNode(x, ptr, nullptr, index);
+        ptr = ptr->next;
+        index++;
+        x = cin.get();
+    }
+    int count_initial = index - 1;
+    ptr = nullptr;
+
+    ListNode **arr = new ListNode *[count_initial + 1];
+    ptr = head;
+    for (int i = 0; i <= count_initial; i++)
+    {
+        arr[i] = ptr;
+        ptr = ptr->next;
+    }
+    ptr = nullptr;
+
+    int n;
+    cin >> n;
+    Operactor *o = new Operactor[n];
+    int count_insert = 0;
+    for (int i = 0; i < n; i++)
+    {
+        cin >> o[i].operactor;
+        switch (o[i].operactor)
+        {
+        case 1:
+            cin >> o[i].ch >> o[i].p;
+            count_insert++;
+            break;
+        case 2:
+            cin >> o[i].p;
+            break;
+        case 3:
+            cin >> o[i].l >> o[i].r;
+            break;
+        }
+    }
+
+    ListNode *head_notebook = new ListNode(0, nullptr, nullptr, 0);
+    bool is = false;
+    for (int i = 0; i < n; i++)
+    {
+        switch (o[i].operactor)
+        {
+        case 1:
+            ptr = find(arr, head_notebook, o[i].p);
+
+            // // test
+            // cout << "value we find is " << ptr->value << endl;
+
+            index = ptr->index;
+
+            // // test
+            // cout << "index we find is " << index << endl;
+            ptr->last->insert(o[i].ch, index);
+            ptr = head_notebook;
+            is = false;
+            while (ptr->next != nullptr)
+            {
+                if (index < ptr->next->index)
+                {
+                    ptr->insert(1, index);
+                    is = true;
+                    break;
+                }
+                else if (index == ptr->next->index)
+                {
+                    ptr->next->value++;
+                    is = true;
+                    break;
+                }
+                else
+                {
+                    ptr = ptr->next;
+                }
+            }
+            if (is == false)
+            {
+                // cout << "is==false" << endl;
+                ptr->next = new ListNode(1, ptr, nullptr, index);
+            }
+            ptr = nullptr;
+
+            // // test
+            // ptr = head->next;
+            // while (ptr != nullptr)
+            // {
+            //     cout << ptr->value;
+            //     ptr = ptr->next;
+            // }
+            // cout << endl;
+            // ptr = head_notebook;
+            // while (ptr != nullptr)
+            // {
+            //     cout << "(" << ptr->index << ", " << +ptr->value << ")   ";
+            //     ptr = ptr->next;
+            // }
+            // cout << endl;
+
+            break;
+
+        case 2:
+            ptr = find(arr, head_notebook, o[i].p);
+            cout << ptr->value << endl;
+            break;
+        case 3:
+            ptr = find(arr, head_notebook, o[i].l);
+            for (int j = o[i].l; j <= o[i].r; j++)
+            {
+                ptr->value = 'a' + 'z' - ptr->value;
+                ptr = ptr->next;
+            }
+            break;
+        }
+    }
+
+    delete[] o;
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <iostream>
+using namespace std;
+
+struct Page
+{
+    int index;
+    int extra_number;
+    int before_number;
+    Page *next;
+    Page *last;
+
+    Page()
+    {
+        this->index = 0;
+        this->extra_number = 0;
+        this->before_number = 0;
+        this->next = nullptr;
+        this->last = nullptr;
+    }
+
+    Page(int index, int extra_number, int before_number, Page *last, Page *next)
+    {
+        this->index = index;
+        this->extra_number = extra_number;
+        this->before_number = before_number;
+        this->last = last;
+        this->next = next;
+    }
+
+    void insert(int index, int extra_number, int before_number)
+    {
+        if (this == nullptr)
+            return;
+        Page *newPage = new Page(index, extra_number, before_number, this, this->next);
+        if (this->next != nullptr)
+            this->next->last = newPage;
+        this->next = newPage;
+    }
+};
+
+struct MiniNode
+{
+    char value;
+    MiniNode *next;
+    MiniNode *last;
+
+    MiniNode()
+    {
+        this->value = 0;
+    }
+
+    MiniNode(char value, MiniNode *last, MiniNode *next)
+    {
+        this->value = value;
+        this->last = last;
+        this->next = next;
+    }
+};
+
+struct Arr_List
+{
+    int arr_lenth;
+    int num;
+    MiniNode **arr;
+    Page *head_notebook;
+
+    Arr_List(int arr_lenth)
+    {
+        this->arr_lenth = arr_lenth;
+        this->num = arr_lenth;
+        arr = new MiniNode *[arr_lenth + 1];
+        head_notebook = new Page;
+    }
+
+    void insert(char value, int position)
+    {
+        cout << "insert begin" << endl;
+        if (this == nullptr)
+        {
+            cout << "insert return because this is nullptr" << endl;
+            return;
+        }
+        if (position > this->num)
+        {
+            cout << "insert return because of out of bound" << endl;
+            return;
+        }
+
+        this->num++;
+
+        int index = position;
+        int back = 0;
+        Page *page = head_notebook;
+        if (head_notebook->next != nullptr)
+        {
+            cout << "begin while" << endl;
+            while (true)
+            {
+                if (position < page->next->before_number)
+                {
+                    cout << "if " << endl;
+                    index = page->next->index - (page->next->before_number - position + 1);
+                    back = 0;
+
+                    page->insert(index, 1, position - 1);
+                    page = page->next;
+
+                    break;
+                }
+                else if (position > (page->next->before_number + page->next->extra_number + 1))
+                {
+                    cout << "else if" << endl;
+                    if (page->next->next == nullptr)
+                    {
+                        page = page->next;
+
+                        index = page->index + (position - (page->before_number + page->extra_number + 1));
+                        back = 0;
+
+                        page->insert(index, 1, position - 1);
+                        page = page->next;
+
+                        break;
+                    }
+                    page = page->next;
+                }
+                else
+                {
+                    cout << "else" << endl;
+                    page = page->next;
+                    index = page->index;
+                    back = (page->before_number + page->extra_number + 1) - position;
+                    page->extra_number++;
+
+                    break;
+                }
+            }
+        }
+        else
+        {
+            index = position;
+            back = 0;
+            head_notebook->insert(index, 1, position - 1);
+            page = head_notebook->next;
+        }
+        page = page->next;
+        cout << "change before number" << endl;
+        while (page != nullptr)
+        {
+            page->before_number++;
+            page = page->next;
+        }
+
+        // test
+        cout << "index: " << index << endl;
+        cout << "back: " << back << endl;
+
+        MiniNode *ptr = arr[index];
+        for (int i = 0; i < back; i++)
+            ptr = ptr->last;
+
+        /// test
+        cout << "ptr value: " << ptr->value << endl;
+        cout << endl;
+
+        MiniNode *newNode = new MiniNode(value, ptr->last, ptr);
+        ptr->last->next = newNode;
+        ptr->last = newNode;
+        newNode = nullptr;
+    }
+
+    MiniNode *find(int position)
+    {
+        cout << "find beigin" << endl;
+        if (this == nullptr)
+        {
+            cout << "find nothing and return a nullptr because input is nullptr" << endl;
+            return nullptr;
+        }
+        if (position > num)
+        {
+            cout << "find nothing and return a nullptr because position is out of boundary" << endl;
+            return nullptr;
+        }
+
+        int index = position;
+        int back = 0;
+        Page *page = head_notebook;
+        cout << "begin while" << endl;
+        while (page->next != nullptr)
+        {
+            if (position < page->next->before_number)
+            {
+                cout << "if " << endl;
+                index = page->next->index - (page->next->before_number - position + 1);
+
+                back = 0;
+
+                break;
+            }
+            else if (position > (page->next->before_number + page->next->extra_number + 1))
+            {
+                cout << "else if" << endl;
+                if (page->next->next == nullptr)
+                {
+                    page = page->next;
+
+                    index = page->index + (position - (page->before_number + page->extra_number + 1));
+                    back = 0;
+
+                    break;
+                }
+                page = page->next;
+            }
+            else
+            {
+                cout << "else" << endl;
+                page = page->next;
+                index = page->index;
+                back = (page->before_number + page->extra_number + 1) - position;
+
+                break;
+            }
+        }
+        page = nullptr;
+
+        cout << "index: " << index << endl;
+        cout << "back: " << back << endl;
+
+        MiniNode *ptr = arr[index];
+        for (int i = 0; i < back; i++)
+            ptr = ptr->last;
+        cout << "ptr value: " << ptr->value << endl;
+        cout << endl;
+        return ptr;
+    }
+};
+
+struct Operactor
+{
+    int operactor;
+    char ch;
+    int p;
+    int l;
+    int r;
+
+    Operactor()
+    {
+        operactor = 0;
+        ch = 0;
+        p = 0;
+        l = 0;
+        r = 0;
+    }
+};
+
+int main()
+{
+    MiniNode *ptr = nullptr;
+    MiniNode *head = new MiniNode;
+    ptr = head;
+    char ch = cin.get();
+    int count = 0;
+    while (ch != '\n')
+    {
+        ptr->next = new MiniNode(ch, ptr, nullptr);
+        ptr = ptr->next;
+        count++;
+        ch = cin.get();
+    }
+
+    // char * str = new char[2000001];
+    // for(int i = 0; i < 2000001;i++)
+    // {
+    //     str[i] = '\0';
+    // }
+    // cin.getline(str,2000000);
+
+    ptr = head;
+    Arr_List A(count);
+    for (int i = 0; i <= count; i++)
+    {
+        A.arr[i] = ptr;
+        ptr = ptr->next;
+    }
+
+    //--------------------------------------------------------------------------
+
+    int n;
+    cin >> n;
+    Operactor *o = new Operactor[n];
+    int count_insert = 0;
+    for (int i = 0; i < n; i++)
+    {
+        cin >> o[i].operactor;
+        switch (o[i].operactor)
+        {
+        case 1:
+            cin >> o[i].ch >> o[i].p;
+            count_insert++;
+            break;
+        case 2:
+            cin >> o[i].p;
+            break;
+        case 3:
+            cin >> o[i].l >> o[i].r;
+            break;
+        }
+    }
+
+    //-----------------------------------------------------------------------------
+    MiniNode *ptr_test1;
+    Page *ptr_test2;
+    MiniNode *ptr_begin;
+    MiniNode *ptr_end;
+    for (int i = 0; i < n; i++)
+    {
+        switch (o[i].operactor)
+        {
+        case 1:
+            cout << "case 1" << endl;
+            A.insert(o[i].ch, o[i].p);
+
+            // test
+            ptr_test1 = A.arr[0]->next;
+            while (ptr_test1 != nullptr)
+            {
+                cout << ptr_test1->value;
+                ptr_test1 = ptr_test1->next;
+            }
+            cout << endl;
+            ptr_test1 = nullptr;
+            ptr_test2 = A.head_notebook;
+            cout << "(index, befor number, extra number)" << endl;
+            while (ptr_test2 != nullptr)
+            {
+                cout << "(" << ptr_test2->index << ", " << ptr_test2->before_number << ", " << ptr_test2->extra_number << ")   ";
+                ptr_test2 = ptr_test2->next;
+            }
+            cout << endl;
+            ptr_test2 = nullptr;
+
+            break;
+        case 2:
+            cout << "case2" << endl;
+            ptr = A.find(o[i].p);
+            cout << ptr->value << endl;
+            break;
+        case 3:
+            cout << "case3" << endl;
+            ptr_begin = A.find(o[i].l);
+            ptr_end = A.find(o[i].r);
+            ptr = ptr_begin;
+            while (ptr != nullptr && ptr != ptr_end)
+            {
+                ptr->value = 'a' + 'z' - ptr->value;
+                ptr = ptr->next;
+            }
+            break;
+        }
+    }
+
+    delete[] o;
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//块状链表 满分
+#include <iostream>
+#include <cstring>
+using namespace std;
+static const int sqr = 1500;
+
+struct Node
+{
+    int size;
+    char data[sqr * 2 + 10]{'\0'};
+    bool inverse;
+    Node *next;
+
+    Node()
+    {
+        this->size = 0;
+        this->inverse = false;
+        next = nullptr;
+    }
+
+    Node(Node *next, bool inverse)
+    {
+        this->size = 0;
+        this->inverse = inverse;
+        this->next = next;
+    }
+
+    void push_back(char ch)
+    {
+        data[size++] = ch;
+    }
+} *head = nullptr, *tail = nullptr;
+
+struct M
+{
+    Node *ptr;
+    int index;
+};
+
+char *str = new char[2000001]{'\0'};
+int len;
+
+void check(Node *ptr)
+{
+    if (ptr->size < 2 * sqr)
+    {
+        return;
+    }
+    Node *newNode = new Node(ptr->next, ptr->inverse);
+    ptr->next = newNode;
+    for (int i = sqr; i <= ptr->size - 1; i++)
+    {
+        ptr->next->push_back(ptr->data[i]);
+        ptr->data[i] = '\0';
+    }
+    ptr->size = sqr;
+}
+
+bool insert(char ch, int position)
+{
+    if (position <= 0)
+    {
+        cerr << "position < 0! return false" << endl;
+        return false;
+    }
+    if (position > len + 1)
+    {
+        cerr << "position > len + 1! return false" << endl;
+        return false;
+    }
+    if (position == len + 1)
+    {
+        if (tail->inverse == false)
+            tail->push_back(ch);
+        else
+            tail->push_back('a' + 'z' - ch);
+        check(tail);
+        len++;
+        return true;
+    }
+    Node *ptr = head;
+    int count = head->size;
+    while (ptr != nullptr && count < position)
+    {
+        ptr = ptr->next;
+        count += ptr->size;
+    }
+    count -= ptr->size;
+    for (int i = ptr->size; i >= position - count; i--)
+    {
+        ptr->data[i] = ptr->data[i - 1];
+    }
+    if (ptr->inverse == false)
+        ptr->data[position - count - 1] = ch;
+    else
+        ptr->data[position - count - 1] = 'a' + 'z' - ch;
+    ptr->size++;
+    check(ptr);
+    len++;
+    return true;
+}
+
+M query(M &result, int position)
+{
+    if (position < 1)
+    {
+        cerr << "position < 0! return '\0'" << endl;
+        result.index = -1;
+        result.ptr = nullptr;
+        return result;
+    }
+    if (position > len)
+    {
+        cerr << "position > len! return '\0'" << endl;
+        result.index = -1;
+        result.ptr = nullptr;
+        return result;
+    }
+    Node *ptr = head;
+    int count = head->size;
+    while (count < position)
+    {
+        ptr = ptr->next;
+        if (ptr == nullptr)
+        {
+            cerr << "???" << endl;
+            return result;
+        }
+        count += ptr->size;
+    }
+    count -= ptr->size;
+
+    result.index = position - count - 1;
+    result.ptr = ptr;
+    return result;
+}
+
+struct Operactor
+{
+    int operactor;
+    char ch;
+    int p;
+    int l;
+    int r;
+
+    Operactor()
+    {
+        operactor = 0;
+        ch = 0;
+        p = 0;
+        l = 0;
+        r = 0;
+    }
+};
+
+int main(int argc, char *argv[])
+{
+    bool test = false;
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+        test = true;
+
+    if (test == true)
+    {
+        const char *str1 = "abcdefghijklmnopqrstuvwxyz";
+        strcat(str, str1);
+    }
+    else
+    {
+        scanf("%s", str);
+    }
+    len = strlen(str);
+    if (test == true)
+    {
+        cout << str << endl;
+        cout << "len" << len << endl;
+    }
+    Node *ptr = new Node();
+    head = ptr;
+    tail = ptr;
+    for (int i = 0; i < len; i++)
+    {
+        if (ptr->size >= sqr)
+        {
+            ptr->next = new Node();
+            ptr = ptr->next;
+            tail = ptr;
+        }
+        ptr->push_back(str[i]);
+    }
+    if (test == true)
+    { // test
+        ptr = head;
+        while (ptr != nullptr)
+        {
+            for (int i = 0; i < ptr->size; i++)
+            {
+                cout << ptr->data[i];
+            }
+            cout << "  ";
+            ptr = ptr->next;
+        }
+        cout << endl;
+    }
+
+    //--------------------------------------------------------------------------
+
+    int n = 0;
+    if (test == true)
+        n = 18;
+    else
+        cin >> n;
+    Operactor *o = new Operactor[n];
+    if (test == false)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            cin >> o[i].operactor;
+            switch (o[i].operactor)
+            {
+            case 1:
+                cin >> o[i].ch >> o[i].p;
+                break;
+            case 2:
+                cin >> o[i].p;
+                break;
+            case 3:
+                cin >> o[i].l >> o[i].r;
+                break;
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i <= 6; i++)
+        {
+            o[i].operactor = 1;
+            o[i].ch = 'a' + i;
+            o[i].p = 6 * i + 1;
+        }
+
+        for (int i = 7; i <= 12; i++)
+        {
+            o[i].operactor = 1;
+            o[i].ch = '1';
+            o[i].p = 2;
+        }
+        o[13].operactor = 3;
+        o[13].l = 8;
+        o[13].r = 11;
+
+        o[14].operactor = 3;
+        o[14].l = 8;
+        o[14].r = 11;
+
+        o[15].operactor = 3;
+        o[15].l = 10;
+        o[15].r = 14;
+
+        o[16].operactor = 3;
+        o[16].l = 10;
+        o[16].r = 14;
+
+        o[17].operactor = 3;
+        o[17].l = 10;
+        o[17].r = 19;
+
+        // o[1].operactor = 1;
+        // o[1].ch = 2;
+        // o[1].p = ;
+
+        // o[2].operactor = 1;
+        // o[2].ch = 3;
+        // o[2].p = ;
+
+        // o[3].operactor = 1;
+        // o[3].ch = 4;
+        // o[3].p = ;
+
+        // o[4].operactor = 1;
+        // o[4].ch = 5;
+        // o[4].p = ;
+
+        // o[5].operactor = 1;
+        // o[5].ch = 6;
+        // o[5].p = ;
+
+        // o[6].operactor = 1;
+        // o[6].ch = 0;
+        // o[6].p = ;
+
+        // o[7].operactor = 1;
+        // o[7].ch = ;
+        // o[7].p = ;
+
+        // o[8].operactor = 1;
+        // o[8].ch = ;
+        // o[8].p = ;
+
+        // o[9].operactor = 1;
+        // o[9].ch = ;
+        // o[9].p = ;
+    }
+
+    //-----------------------------------------------------------------------------
+    M result;
+    M ml, mr;
+    Node *ptr_test1;
+    for (int i = 0; i < n; i++)
+    {
+        switch (o[i].operactor)
+        {
+        case 1:
+            if (test == true)
+                cout << "case 1" << endl;
+            insert(o[i].ch, o[i].p);
+            if (test == true)
+            {
+                // test
+                cout << "len " << len << endl;
+                ptr = head;
+                while (ptr != nullptr)
+                {
+                    cout << ptr->inverse << "  ";
+                    ptr = ptr->next;
+                }
+                cout << endl;
+                ptr = head;
+                while (ptr != nullptr)
+                {
+                    for (int i = 0; i < ptr->size; i++)
+                    {
+                        cout << ptr->data[i];
+                    }
+                    cout << "  ";
+                    ptr = ptr->next;
+                }
+                cout << endl;
+            }
+            break;
+        case 2:
+            if (test == true)
+                cout << "case2" << endl;
+            query(result, o[i].p);
+            if (result.index != -1)
+            {
+                char ch;
+                if (result.ptr->inverse == false)
+                    ch = result.ptr->data[result.index];
+                else
+                    ch = 'a' + 'z' - result.ptr->data[result.index];
+                cout << ch << endl;
+            }
+            break;
+        case 3:
+            if (test == true)
+                cout << "case3" << endl;
+            if (o[i].l > o[i].r)
+            {
+                cerr << "l > r" << endl;
+                break;
+            }
+            query(ml, o[i].l);
+            query(mr, o[i].r);
+            ptr = ml.ptr;
+            while (true)
+            {
+                if (ml.ptr == mr.ptr)
+                {
+                    for (int i = ml.index; i <= mr.index; i++)
+                    {
+                        ptr->data[i] = 'a' + 'z' - ptr->data[i];
+                    }
+                    break;
+                }
+                else
+                {
+                    if (ptr == ml.ptr)
+                    {
+                        for (int i = ml.index; i < ptr->size; i++)
+                        {
+                            ptr->data[i] = 'a' + 'z' - ptr->data[i];
+                        }
+                        ptr = ptr->next;
+                    }
+                    if (ptr == mr.ptr)
+                    {
+                        for (int i = 0; i <= mr.index; i++)
+                        {
+                            ptr->data[i] = 'a' + 'z' - ptr->data[i];
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        ptr->inverse = ptr->inverse == true ? false : true;
+                        ptr = ptr->next;
+                    }
+                }
+            }
+            if (test == true)
+            { // test
+                cout << "len " << len << endl;
+                ptr = head;
+                while (ptr != nullptr)
+                {
+                    cout << ptr->inverse << "  ";
+                    ptr = ptr->next;
+                }
+                cout << endl;
+                ptr = head;
+                while (ptr != nullptr)
+                {
+                    for (int i = 0; i < ptr->size; i++)
+                    {
+                        cout << ptr->data[i];
+                    }
+                    cout << "  ";
+                    ptr = ptr->next;
+                }
+                cout << endl;
+            }
+
+            break;
+        }
+    }
+
+    delete[] o;
+    return 0;
+}

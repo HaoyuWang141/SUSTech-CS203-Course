@@ -1,0 +1,380 @@
+// 堆，卒
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+#include <queue>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+const int MAX = ???;
+int t, a, b, n_heap, heap[MAX]{0};
+
+struct node
+{
+    int v;
+    node *nxt;
+    node(int v = 0, node *nxt = nullptr)
+    {
+        this->v = v;
+        this->nxt = nxt;
+    }
+};
+
+void min_heap(int c)
+{
+    if (c > n_heap)
+        return;
+    int l = 2 * c;
+    int r = 2 * c + 1;
+    int index_min = c;
+    if (l <= n_heap && heap[l] < heap[index_min])
+        index_min = l;
+    if (r <= n_heap && heap[r] < heap[index_min])
+        index_min = r;
+    if (index_min != c)
+    {
+        int temp = heap[index_min];
+        heap[index_min] = heap[c];
+        heap[c] = temp;
+        min_heap(index_min);
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    cin >> t;
+    for (int i = 0; i < t; i++)
+    {
+        node *head = new node(-1);
+        cin >> a >> b;
+        for (int j = 1; j <= b + 1; j++)
+            heap[j] = a ^ (j - 1);
+        n_heap = b + 1;
+        for (int j = n_heap / 2; j >= 1; j--)
+            min_heap(j);
+        if (test)
+        {
+            cout << "heap: " << endl;
+            for (int j = 1; j <= b + 1; j++)
+            {
+                cout << heap[j] << " ";
+            }
+            cout << endl;
+        }
+        node *ptr = head;
+        if (test)
+            cout << "list: " << endl;
+        for (int j = 1; j <= b + 1; j++)
+        {
+            if (test)
+                cout << "heap[1]: " << heap[1] << " "
+                     << "ptr->v: " << ptr->v << endl;
+            if (heap[1] != ptr->v)
+            {
+                ptr->nxt = new node(heap[1]);
+                ptr = ptr->nxt;
+            }
+            heap[1] = heap[n_heap--];
+            if (test)
+            {
+                cout << "n_heap: " << n_heap << endl;
+                cout << "before heap: ";
+                for (int j = 1; j <= b + 1; j++)
+                {
+                    cout << heap[j] << " ";
+                }
+                cout << endl;
+            }
+            min_heap(1);
+            if (test)
+            {
+                cout << "after heap: ";
+                for (int j = 1; j <= b + 1; j++)
+                {
+                    cout << heap[j] << " ";
+                }
+                cout << endl;
+            }
+        }
+        if (test)
+            cout << endl;
+        ptr = head->nxt;
+        int cnt = -1;
+        bool flag = true;
+        while (ptr != nullptr)
+        {
+            cnt++;
+            if (test)
+                cout << "cnt: " << cnt << " ptr->v: " << ptr->v << endl;
+            if (cnt != ptr->v)
+            {
+                cout << cnt << endl;
+                flag = false;
+                break;
+            }
+            ptr = ptr->nxt;
+        }
+        if (flag)
+            cout << cnt + 1 << endl;
+    }
+
+    return 0;
+}
+
+// AWL 平衡二叉树，卒！
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+#include <queue>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+// const int MAX = ;
+int t, a, b, target, cnt;
+bool return_flag = false;
+
+struct node
+{
+    int v;
+    int d;
+    node *l, *r;
+    node(int v)
+    {
+        this->v = v;
+        this->d = 1;
+        this->l = nullptr;
+        this->r = nullptr;
+    }
+};
+node *root;
+
+int max_depth_avl(node *l, node *r)
+{
+    if (l != nullptr && r != nullptr)
+        return (l->d > r->d) ? l->d : r->d;
+    else if (l == nullptr && r != nullptr)
+        return r->d;
+    else if (l != nullptr && r == nullptr)
+        return l->d;
+    else
+        return 0;
+}
+
+int depth(node *p)
+{
+    if (p == nullptr)
+        return 0;
+    else
+        return p->d;
+}
+
+node *right_rotate(node *p)
+{
+    node *new_root = p->l;
+    p->l = new_root->r;
+    new_root->r = p;
+    p->d = max_depth_avl(p->l, p->r) + 1;
+    new_root->d = max_depth_avl(new_root->l, new_root->r) + 1;
+    return new_root;
+}
+
+node *left_rotate(node *p)
+{
+    node *new_root = p->r;
+    p->r = new_root->l;
+    new_root->l = p;
+    p->d = max_depth_avl(p->l, p->r) + 1;
+    new_root->d = max_depth_avl(new_root->l, new_root->r) + 1;
+    return new_root;
+}
+
+node *insert(node *p)
+{
+    if (p == nullptr)
+        return new node(target);
+    if (p->v < target)
+        p->r = insert(p->r);
+    else if (p->v > target)
+        p->l = insert(p->l);
+    else
+        return p;
+    p->d = max_depth_avl(p->l, p->r) + 1;
+
+    // maintain avl
+    if (depth(p->l) - depth(p->r) == 2 && target < p->l->v)
+    {
+        return right_rotate(p);
+    }
+    if (depth(p->r) - depth(p->l) == 2 && target > p->r->v)
+    {
+        return left_rotate(p);
+    }
+    if (depth(p->l) - depth(p->r) == 2 && target > p->l->v)
+    {
+        p->l = left_rotate(p->l);
+        return right_rotate(p);
+    }
+    if (depth(p->r) - depth(p->l) == 2 && target < p->r->v)
+    {
+        p->r = right_rotate(p->r);
+        return left_rotate(p);
+    }
+    return p;
+}
+
+void pre_order(node *p)
+{
+    if (p == nullptr)
+        return;
+    cout << p->v << " ";
+    pre_order(p->l);
+    pre_order(p->r);
+}
+
+void mid_order(node *p)
+{
+    if (p == nullptr)
+        return;
+    mid_order(p->l);
+    if (return_flag)
+        return;
+    if (test)
+        cout << p->v << " ";
+    if (cnt != p->v)
+    {
+        return_flag = true;
+        return;
+    }
+    cnt++;
+    mid_order(p->r);
+}
+
+void delete_avl(node *p)
+{
+    if (p == nullptr)
+        return;
+    delete_avl(p->l);
+    delete_avl(p->r);
+    delete p;
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    // cin >> t;
+    t = 100;
+    cin>>b;
+    for (int i = 0; i < t; i++)
+    {
+        if (test)
+        {
+            cin >> a;
+            root = nullptr;
+            for (int j = 0; j < a; j++)
+            {
+                cin >> target;
+                root = insert(root);
+            }
+        }
+        else
+        {
+            a = i;
+            // cin >> a >> b;
+            root = nullptr;
+            for (int j = 0; j <= b; j++)
+            {
+                target = a ^ j;
+                root = insert(root);
+            }
+        }
+        if (test)
+        {
+            cout << "awl: " << endl;
+            pre_order(root);
+            cout << endl;
+        }
+        cnt = 0;
+        return_flag = false;
+        if (test)
+            cout << "mid_order begin:" << endl;
+        mid_order(root);
+        if (test)
+            cout << endl;
+        cout << cnt << endl;
+        delete_avl(root);
+    }
+    return 0;
+}
+
+// 满分 数学解法，找规律，参见excel
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+#include <queue>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+// const int MAX = ;
+ll t, a, b;
+
+ll A(ll a, ll b)
+{
+    ll m = log(a + 1) / log(2);
+    ll lower_bound = a - (pow(2, m) - 1);
+    ll upper_bound = pow(2, m) - 1;
+    if (test)
+        cout << "a: " << a << " b: " << b << " m: " << m
+             << " lower_bound: " << lower_bound << " upper_bound: " << upper_bound << endl;
+    if (b >= lower_bound && b <= upper_bound)
+    {
+        return pow(2, m);
+    }
+    else if (b < lower_bound && b >= 0)
+    {
+        return pow(2, m) + A(a, b + pow(2, m));
+    }
+    else if (b > upper_bound)
+    {
+        return A(a - pow(2, m), b - pow(2, m));
+    }
+    else
+    {
+        cerr << "b < 0" << endl;
+        return -1;
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    cin >> t;
+    for (int i = 0; i < t; i++)
+    {
+        cin >> b >> a;
+        if (b > a)
+        {
+            cout << 0 << endl;
+        }
+        else
+        {
+            cout << A(a, b) << endl;
+        }
+    }
+    return 0;
+}

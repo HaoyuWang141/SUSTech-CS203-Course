@@ -1,0 +1,172 @@
+//满分二分法
+#include <iostream>
+#include <math.h>
+using namespace std;
+
+int read(int x = 0, int f = 1, char ch = getchar())
+ {
+	 while(ch < '0' || ch > '9') 
+	{
+	 	if(ch == '-')  f = -1; 
+		ch = getchar(); 
+	}
+	while(ch >= '0' && ch <= '9') x = x * 10 + ch - '0', ch = getchar(); 
+	return x * f; 
+}
+
+void InsertionSortDichotomy(int n, int *arr)
+{
+	int left = 0;
+	int right = 0;
+	int mid = 0;
+	int get = 0;
+	for(int i = 1; i < n; i++)
+	{
+		get= arr[i];
+		left = 0;
+		right = i-1;
+		while(left <= right)
+		{
+			mid = (left + right) / 2;
+			if(get < arr[mid])
+			{
+				right = mid - 1;
+			}
+			else
+			{
+				left = mid + 1;
+			}
+		}
+		for(int j = i; j > left; j--)
+		{
+			arr[j] = arr[j-1];	
+		}
+		arr[left] = get;
+	}
+}
+	
+int main() 
+{
+	int T=0;
+	int n=0;
+	int l1=0,r1=0,l2=0,r2=0;
+	int length_arr = 0;
+	int length_left = 0;
+	int length_right = 0;
+	int length_total = 0;
+	
+	int move = 0;
+	int index_left = 0;
+	int index_right = 0;
+	
+	int left = 0;
+	int right = 0;
+	int mid = 0;
+	
+	bool judge = false;
+	cin>>T;
+
+	for(int i=0;i<T;i++)
+	{
+		judge = false;
+		cin>>n>>l1>>r1>>l2>>r2;
+		int * arr = new int[n];
+		for(int j=0;j<n;j++)
+		{
+			arr[j]=read();
+			cout<<arr[j]<<" ";
+		}
+		cout<<endl;
+		
+		InsertionSortDichotomy(n,arr);//排序
+		
+		cout<<"排序后"<<endl;
+		for(int j=0;j<n;j++)
+		{
+			cout<<arr[j]<<" ";
+		}
+		cout<<endl;
+		
+		length_arr = arr[n-1] - arr[0];//数组max-min
+		length_left = r1 - l1;
+		length_right = r2 - l2;
+		length_total = r2 - l1;
+		
+		if(length_arr<=length_left || length_arr<=length_right)
+		{
+			judge = true;
+		}
+		else if(length_arr > length_total)
+		{
+			judge = false;	
+		}
+		else
+		{
+			move = l1 - arr[0];
+			for(int j=0;j<n;j++)
+			{
+				arr[j]+=move;
+			}
+
+			left = 0;
+			right = n-1;
+			
+			while(left<=right)
+			{
+				mid = (left+right)/2;
+				if(arr[mid]>r1)
+				{
+					right = mid - 1;
+				}
+				else
+				{
+					left = mid + 1;
+				}
+			}
+			index_right = left;
+			cout<<"index_right"<<index_right<<endl;
+			
+			move = r2 - arr[n-1];
+			for(int j=0;j<n;j++)
+			{
+				arr[j]+=move;
+			}
+			
+			left = 0;
+			right = n-1;
+			
+			while(left<=right)
+			{
+				mid = ceil(((float)left+(float)right)/2);
+				if(arr[mid]<l2)
+				{
+					left = mid + 1;
+				}
+				else
+				{
+					right = mid - 1;
+				}
+			}
+			index_left = right;
+			cout<<"index_left"<<index_left<<endl;
+				
+			for(int j=index_left;j<index_right;j++)
+			{
+				if(arr[j+1]-arr[j] >= l2 - r1)
+				{
+					judge = true;
+				}
+			}
+		}
+		if(judge)
+			{
+				cout<<"YES"<<endl;
+			}
+			else
+			{
+				cout<<"NO"<<endl;
+			}
+		delete[] arr;
+	}
+	return 0;
+}

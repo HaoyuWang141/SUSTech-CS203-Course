@@ -1,0 +1,189 @@
+//æ≈ Æ∑÷
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+struct Node
+{
+    int value;
+    Node *l;
+    Node *r;
+
+    Node()
+    {
+        value = 0;
+        l = nullptr;
+        r = nullptr;
+    }
+
+    Node(int value, Node *l, Node *r)
+    {
+        this->value = value;
+        this->l = l;
+        this->r = r;
+    }
+};
+
+struct Queueue
+{
+    Node *left;
+    Node *right;
+
+    Queueue()
+    {
+        Node *temp = new Node(1, nullptr, nullptr);
+        left = new Node(0, nullptr, temp);
+        right = new Node(0, temp, nullptr);
+        temp->l = left;
+        temp->r = right;
+    }
+
+    ~Queueue()
+    {
+        right = nullptr;
+        while (left != nullptr)
+        {
+            Node *temp = left->r;
+            delete left;
+            left = temp;
+        }
+        left = nullptr;
+    }
+};
+
+int main(int argc, char **argv)
+{
+    bool test = false;
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+        test = true;
+
+    int n, o, m;
+    cin >> n;
+    int c = 1;
+    Queueue q;
+    Node *temp = nullptr;
+    Node *ptr = nullptr;
+    for (int i = 0; i < n; i++)
+    {
+        cin >> o;
+        switch (o)
+        {
+        case 1:
+            temp = new Node(++c, q.right->l, q.right);
+            temp->l->r = temp;
+            temp->r->l = temp;
+            temp = nullptr;
+            q.right->value++;
+
+            // test
+            if (test)
+            {
+                ptr = q.left;
+                while (ptr != nullptr)
+                {
+                    cout << ptr->value << " ";
+                    ptr = ptr->r;
+                }
+                cout << endl;
+                ptr = nullptr;
+            }
+
+            break;
+
+        case 2:
+            if (q.right->l->l == nullptr)
+            {
+                cerr << "something wrong" << endl;
+                return 0;
+            }
+            temp = q.right->l;
+            temp->l->r = temp->r;
+            temp->r->l = temp->l;
+            delete temp;
+            temp = nullptr;
+            q.right->value--;
+
+            // test
+            if (test)
+            {
+                ptr = q.left;
+                while (ptr != nullptr)
+                {
+                    cout << ptr->value << " ";
+                    ptr = ptr->r;
+                }
+                cout << endl;
+                ptr = nullptr;
+            }
+
+            break;
+
+        case 3:
+            temp = new Node(++c, q.left, q.left->r);
+            temp->l->r = temp;
+            temp->r->l = temp;
+            temp = nullptr;
+            q.left->value++;
+
+            // test
+            if (test)
+            {
+                ptr = q.left;
+                while (ptr != nullptr)
+                {
+                    cout << ptr->value << " ";
+                    ptr = ptr->r;
+                }
+                cout << endl;
+                ptr = nullptr;
+            }
+
+            break;
+
+        case 4:
+            if (q.left->r->r == nullptr)
+            {
+                cerr << "something wrong" << endl;
+                return 0;
+            }
+            temp = q.left->r;
+            temp->l->r = temp->r;
+            temp->r->l = temp->l;
+            delete temp;
+            temp = nullptr;
+            q.left->value--;
+
+            // test
+            if (test)
+            {
+                ptr = q.left;
+                while (ptr != nullptr)
+                {
+                    cout << ptr->value << " ";
+                    ptr = ptr->r;
+                }
+                cout << endl;
+                ptr = nullptr;
+            }
+
+            break;
+
+        case 5:
+            m = ((q.left->value + q.right->value + 1) + 1) / 2;
+            ptr = q.left;
+            for (int i = 0; i < m; i++)
+            {
+                ptr = ptr->r;
+            }
+            cout << ptr->value << endl;
+            m = 0;
+            break;
+
+        default:
+            cerr << "something wrong" << endl;
+            return 0;
+        }
+    }
+
+    return 0;
+}

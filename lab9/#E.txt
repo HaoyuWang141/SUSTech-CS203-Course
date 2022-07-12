@@ -1,0 +1,64 @@
+// 满分
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+int n, v_i, t_i, p;
+ll sum;
+vector<int> vec[10005];
+int arr[10005]{0};
+int t[10005]{0};
+ll t_max[10005]{0};
+bool r = false;
+
+ll get_sum(int c)
+{
+    arr[c] = 1;
+    ll s = 0;
+    for (int i = 0; i < vec[c].size(); i++)
+    {
+        if (t_max[vec[c][i]] == 0)
+            t_max[vec[c][i]] = get_sum(vec[c][i]);
+        if (t_max[vec[c][i]] > s)
+            s = t_max[vec[c][i]];
+    }
+    return s + t[c];
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    cin >> n;
+    for (int i = 0; i < n; i++)
+    {
+        cin >> v_i >> t_i;
+        t[v_i] = t_i;
+        cin >> p;
+        while (p != 0)
+        {
+            vec[v_i].push_back(p);
+            cin >> p;
+        }
+    }
+
+    for (int i = n; i >= 1; i--)
+    {
+        if (arr[i] == 0)
+        {
+            ll sum_temp = get_sum(i);
+            if (sum_temp > sum)
+                sum = sum_temp;
+        }
+    }
+
+    cout << sum << endl;
+
+    return 0;
+}

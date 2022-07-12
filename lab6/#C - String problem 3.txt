@@ -1,0 +1,156 @@
+//满分
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main(int argc, char **argv)
+{
+    bool test = false;
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+        test = true;
+
+    int n, j1, j2;
+    cin >> n;
+    char *arr = new char[n];
+    scanf("%s", arr);
+
+    if (n < 2)
+    {
+        cerr << "something wrong" << endl;
+        return 0;
+    }
+    else if (n % 2 == 0)
+    {
+        cout << "NOT POSSIBLE" << endl;
+        return 0;
+    }
+
+    // test
+    if (test)
+    {
+        cout << arr << endl;
+    }
+
+    int insert[2]{-1, -1};
+    int issue[2]{-1, -1};
+
+    // issue代号
+    // 01：执行并为成功状态
+    // 10：执行并为异常状态
+
+    //假设插入字符在前半部分
+    j1 = 0;
+    j2 = (n + 1) / 2;
+    for (int i = 0; i < n / 2; i++)
+    {
+        if (arr[j1] != arr[j2])
+        {
+            if (issue[0] == 1)
+            {
+                issue[0] = 0;
+                insert[0] = -1;
+                break;
+            }
+            else
+            {
+                j1++;
+                if (arr[j1] != arr[j2])
+                {
+                    issue[0] = 0;
+                    insert[0] = -1;
+                    break;
+                }
+                else
+                {
+                    issue[0] = 1;
+                    insert[0] = j1 - 1;
+                }
+            }
+        }
+        j1++;
+        j2++;
+    }
+    if (issue[0] == -1)
+    {
+        issue[0] = 0;
+        insert[0] = -1;
+    }
+
+    //假设插入字符在后半部分
+    j1 = 0;
+    j2 = (n - 1) / 2;
+    for (int i = 0; i < n / 2; i++)
+    {
+        if (arr[j1] != arr[j2])
+        {
+            if (issue[1] == 0)
+            {
+                issue[1] = 1;
+                insert[1] = -1;
+                break;
+            }
+            else
+            {
+                j2++;
+                if (arr[j1] != arr[j2])
+                {
+                    issue[1] = 0;
+                    insert[1] = -1;
+                    break;
+                }
+                else
+                {
+                    issue[1] = 1;
+                    insert[1] = j2 - 1;
+                }
+            }
+        }
+        j1++;
+        j2++;
+    }
+    if (issue[1] == -1)
+    {
+        issue[1] = 1;
+        insert[1] = j2;
+    }
+
+    if (test)
+    {
+        cout << "issue: " << issue[0] << " " << issue[1] << endl;
+        cout << "insert: " << insert[0] << " " << insert[1] << endl;
+    }
+
+    if (issue[0] == 1 && issue[1] == 1)
+    {
+        cout << "NOT UNIQUE" << endl;
+    }
+    else if (issue[0] + issue[1] == 1)
+    {
+        int index = insert[0] > insert[1] ? insert[0] : insert[1];
+            if (index >= (n - 1) / 2)
+            {
+                for (int i = 0; i <= (n - 3) / 2; i++)
+                {
+                    cout << arr[i];
+                }
+            }
+            else
+            {
+                for (int i = (n + 1) / 2; i <= n - 1; i++)
+                {
+                    cout << arr[i];
+                }
+            }
+    }
+    else if (issue[0] == 0 && issue[1] == 0)
+    {
+        cout << "NOT POSSIBLE" << endl;
+    }
+    else
+    {
+        cerr << "something wrong" << endl;
+    }
+
+    delete[] arr;
+    return 0;
+}

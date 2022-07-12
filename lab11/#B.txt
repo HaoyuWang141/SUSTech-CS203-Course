@@ -1,0 +1,148 @@
+// 满分，prim 算法裸题，堆实现的比A写的漂亮
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+#include <queue>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+const int MAX_N = 100005;
+int n, m, x, y, z, heap[MAX_N]{0}, n_heap, weight[MAX_N]{0}, arr[MAX_N]{0};
+ll sum = 0;
+
+struct node
+{
+    int index;
+    int value;
+    node(int index = 0, int value = 0)
+    {
+        this->index = index;
+        this->value = value;
+    }
+};
+
+node *nodes[MAX_N];
+
+struct edge
+{
+    node *nxt;
+    ll w;
+    edge(node *nxt, ll w)
+    {
+        this->nxt = nxt;
+        this->w = w;
+    }
+};
+
+vector<edge> vec[MAX_N];
+
+void min_heap(int index_c)
+{
+    int index_l = index_c * 2;
+    int index_r = index_c * 2 + 1;
+    int index_min = index_c;
+    if (index_l <= n_heap && weight[heap[index_l]] <= weight[heap[index_min]])
+        index_min = index_l;
+    if (index_r <= n_heap && weight[heap[index_r]] <= weight[heap[index_min]])
+        index_min = index_r;
+    if (index_min != index_c)
+    {
+        nodes[heap[index_c]]->index = index_min;
+        nodes[heap[index_min]]->index = index_c;
+        int temp = heap[index_c];
+        heap[index_c] = heap[index_min];
+        heap[index_min] = temp;
+        min_heap(index_min);
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    cin >> n >> m;
+    for (int i = 1; i <= n; i++)
+    {
+        nodes[i] = new node(i, i);
+    }
+    for (int i = 1; i <= m; i++)
+    {
+        cin >> x >> y >> z;
+        if (x != y)
+        {
+            edge e1(nodes[y], z);
+            vec[x].push_back(e1);
+            edge e2(nodes[x], z);
+            vec[y].push_back(e2);
+        }
+    }
+    heap[1] = 1;
+    n_heap = 1;
+    while (n_heap != 0)
+    {
+        int c = heap[1];
+        heap[1] = heap[n_heap--];
+        if (n_heap >= 2)
+            min_heap(1);
+        sum += weight[c];
+        arr[c] = 1;
+        if (test)
+        {
+            cout << "c: " << c << " sum: " << sum << endl;
+        }
+        for (int i = 0; i < vec[c].size(); i++)
+        {
+            if (test)
+            {
+                cout << "vec[c][i].nxt->value: " << vec[c][i].nxt->value << endl;
+            }
+            if (arr[vec[c][i].nxt->value] == 1)
+                continue;
+            if (weight[vec[c][i].nxt->value] == 0)
+            {
+                heap[++n_heap] = vec[c][i].nxt->value;
+                weight[vec[c][i].nxt->value] = vec[c][i].w;
+                for (int j = vec[c][i].nxt->index / 2 / 2; j >= 1; j /= 2)
+                {
+                    min_heap(j);
+                }
+            }
+            else if (vec[c][i].w < weight[vec[c][i].nxt->value])
+            {
+                weight[vec[c][i].nxt->value] = vec[c][i].w;
+                for (int j = vec[c][i].nxt->index / 2; j >= 1; j /= 2)
+                {
+                    min_heap(j);
+                    if (test)
+                    {
+                        for (int i = 1; i <= n_heap; i++)
+                        {
+                            cout << "(" << heap[i] << ", " << weight[heap[i]] << ")"
+                                 << " ";
+                        }
+                        cout << endl;
+                    }
+                }
+            }
+        }
+        if (test)
+        {
+            cout << "n_heap: " << n_heap << endl;
+        }
+        if (test)
+        {
+            for (int i = 1; i <= n_heap; i++)
+            {
+                cout << "(" << heap[i] << ", " << weight[heap[i]] << ")"
+                     << " ";
+            }
+            cout << endl;
+        }
+    }
+    cout << sum << endl;
+    return 0;
+}

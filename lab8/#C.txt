@@ -1,0 +1,202 @@
+#include <iostream>
+#include <cmath>
+#include <cstring>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+const int MAX = 200005;
+int *big = new int[MAX];
+int *small = new int[MAX];
+int Q, q, a, b, mid = 0, n_big = 0, n_small = 0;
+ll sum = 0, C = 0;
+
+void heap_big_up(int f, int s)
+{
+    if (f == 0)
+        return;
+    else
+    {
+        if (big[f] < big[s])
+        {
+            int temp = big[f];
+            big[f] = big[s];
+            big[s] = temp;
+            heap_big_up(f / 2, f);
+        }
+    }
+}
+
+void heap_small_up(int f, int s)
+{
+    if (f == 0)
+        return;
+    else
+    {
+        if (small[f] > small[s])
+        {
+            int temp = small[f];
+            small[f] = small[s];
+            small[s] = temp;
+            heap_small_up(f / 2, f);
+        }
+    }
+}
+
+void heap_big_down(int c)
+{
+    int s_max = 0;
+    if (2 * c > n_big)
+        return;
+    else
+    {
+        s_max = 2 * c;
+        if (2 * c + 1 <= n_big && big[2 * c + 1] > big[2 * c])
+            s_max = 2 * c + 1;
+    }
+    if (big[c] < big[s_max])
+    {
+        int temp = big[c];
+        big[c] = big[s_max];
+        big[s_max] = temp;
+        heap_big_down(s_max);
+    }
+}
+
+void heap_small_down(int c)
+{
+    int s_min = 0;
+    if (2 * c > n_small)
+        return;
+    else
+    {
+        s_min = 2 * c;
+        if (2 * c + 1 <= n_small && small[2 * c + 1] < small[2 * c])
+            s_min = 2 * c + 1;
+    }
+    if (small[c] > small[s_min])
+    {
+        int temp = small[c];
+        small[c] = small[s_min];
+        small[s_min] = temp;
+        heap_small_down(s_min);
+    }
+}
+
+void A(int a)
+{
+    sum += std::abs(mid - a);
+    if (test)
+        cout << "sum: " << sum << endl;
+    if (a <= mid) //插大顶堆
+    {
+        big[++n_big] = a;
+        heap_big_up(n_big / 2, n_big);
+    }
+    else //插小顶堆
+    {
+        small[++n_small] = a;
+        heap_small_up(n_small / 2, n_small);
+    }
+
+    if (test)
+    {
+        cout << "heap before maintain:" << endl;
+        cout << "big" << endl;
+        for (int i = 1; i <= n_big; i++)
+            cout << big[i] << " ";
+        cout << endl;
+        cout << "small" << endl;
+        for (int i = 1; i <= n_small; i++)
+            cout << small[i] << " ";
+        cout << endl;
+    }
+
+    if (n_big - n_small > 1) //维护两个堆
+    {
+        small[++n_small] = big[1];
+        heap_small_up(n_small / 2, n_small);
+        big[1] = big[n_big--];
+        heap_big_down(1);
+        sum += std::abs(small[1] - big[1]) * (n_small - n_big);
+        if (test)
+        {
+            cout << "small[1]: " << small[1] << " big[1]: " << big[1] << " n_small: " << n_small << " n_big " << n_big << endl;
+        }
+    }
+    else if (n_big < n_small)
+    {
+        if (test)
+        {
+            cout << "small[1]: " << small[1] << " big[1]: " << big[1] << " n_small: " << n_small << " n_big " << n_big << endl;
+            cout << "sum_before: " << sum << endl;
+        }
+        sum += std::abs(small[1] - big[1]) * (n_big - n_small);
+        if (test)
+        {
+            cout << "sum_after: " << sum << endl;
+        }
+        big[++n_big] = small[1];
+        heap_big_up(n_big / 2, n_big);
+        small[1] = small[n_small--];
+        if (test)
+        {
+            cout << "small[1]: " << small[1] << endl;
+            ;
+        }
+        heap_small_down(1);
+    }
+    mid = big[1];
+
+    if (test)
+    {
+        cout << "heap after maintain:" << endl;
+        cout << "big" << endl;
+        for (int i = 1; i <= n_big; i++)
+            cout << big[i] << " ";
+        cout << endl;
+        cout << "small" << endl;
+        for (int i = 1; i <= n_small; i++)
+            cout << small[i] << " ";
+        cout << endl;
+        cout << "mid: " << mid << " sum: " << sum << endl;
+        cout << endl;
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+
+    cin >> Q;
+    bool first_time = true;
+    for (int i = 0; i < Q; i++)
+    {
+        cin >> q;
+        switch (q)
+        {
+        case 1: // insert
+            cin >> a >> b;
+            if (first_time == true)
+            {
+                mid = a;
+                first_time = false;
+            }
+            A(a);
+            C += b;
+            break;
+        case 2: // print
+            cout << mid << " " << sum + C << endl;
+            break;
+        }
+    }
+
+    return 0;
+}
+
+// 5 1 1 0 1 2 0 1 3 0 1 4 0 2
+// 10 1 1 0 1 2 0 1 3 0 1 4 0 1 5 0 1 6 0 1 7 0 1 8 0 1 9 0 1 10 0
+// 7 1 6 0 1 5 0 1 4 0 1 3 0 1 2 0 1 1 0 1 0 0

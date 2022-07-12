@@ -1,0 +1,108 @@
+//Âú·Ö
+#include <iostream>
+using namespace std;
+
+struct Node
+{
+    long long int num;
+    long long int value;
+    Node *next;
+
+    Node()
+    {
+        num = 0;
+        value = 0;
+        next = nullptr;
+    }
+
+    Node(long long int num, long long int value)
+    {
+        this->num = num;
+        this->value = value;
+        this->next = nullptr;
+    }
+};
+
+struct Queueue
+{
+    Node *head;
+    Node *tail;
+
+    Queueue()
+    {
+        head = new Node();
+        tail = head;
+    }
+
+    ~Queueue()
+    {
+        while (head != nullptr)
+        {
+            Node *temp = head->next;
+            delete head;
+            head = temp;
+        }
+        head = nullptr;
+        tail = nullptr;
+    }
+};
+
+int main()
+{
+    int n, o;
+    cin >> n;
+    Queueue queue;
+    long long int q, x, sum, y;
+    for (int i = 0; i < n; i++)
+    {
+        cin >> o;
+        if (o == 1)
+        {
+            cin >> q >> x;
+            queue.tail->next = new Node(q, x);
+            queue.tail = queue.tail->next;
+        }
+        else if (o == 2)
+        {
+            sum = 0;
+            cin >> y;
+            if (y < 0)
+            {
+                cerr << "something wrong" << endl;
+                return 0;
+            }
+
+            while (queue.head->next != nullptr)
+            {
+                if (y >= queue.head->next->num)
+                {
+                    sum += queue.head->next->num * queue.head->next->value;
+                    y -= queue.head->next->num;
+
+                    Node *temp = queue.head->next->next;
+                    delete queue.head->next;
+                    queue.head->next = temp;
+                }
+                else
+                {
+                    sum += y * queue.head->next->value;
+                    queue.head->next->num -= y;
+                    break;
+                }
+            }
+            cout << sum << endl;
+
+            if (queue.head->next == nullptr)
+            {
+                queue.tail = queue.head;
+            }
+        }
+        else
+        {
+            cerr << "something wrong" << endl;
+            return 0;
+        }
+    }
+
+    return 0;
+}

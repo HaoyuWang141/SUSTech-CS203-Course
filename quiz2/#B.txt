@@ -1,0 +1,128 @@
+// 堆，卒！因为有很多很多重复的东西，堆没法处理
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+#include <queue>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+const int MAX = ???;
+int t, a, b, n_heap, heap[MAX]{0};
+
+struct node
+{
+    int v;
+    node *nxt;
+    node(int v = 0, node *nxt = nullptr)
+    {
+        this->v = v;
+        this->nxt = nxt;
+    }
+};
+
+void min_heap(int c)
+{
+    if (c > n_heap)
+        return;
+    int l = 2 * c;
+    int r = 2 * c + 1;
+    int index_min = c;
+    if (l <= n_heap && heap[l] < heap[index_min])
+        index_min = l;
+    if (r <= n_heap && heap[r] < heap[index_min])
+        index_min = r;
+    if (index_min != c)
+    {
+        int temp = heap[index_min];
+        heap[index_min] = heap[c];
+        heap[c] = temp;
+        min_heap(index_min);
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    cin >> t;
+    for (int i = 0; i < t; i++)
+    {
+        node *head = new node(-1);
+        cin >> a >> b;
+        for (int j = 1; j <= b + 1; j++)
+            heap[j] = a ^ (j - 1);
+        n_heap = b + 1;
+        for (int j = n_heap / 2; j >= 1; j--)
+            min_heap(j);
+        if (test)
+        {
+            cout << "heap: " << endl;
+            for (int j = 1; j <= b + 1; j++)
+            {
+                cout << heap[j] << " ";
+            }
+            cout << endl;
+        }
+        node *ptr = head;
+        if (test)
+            cout << "list: " << endl;
+        for (int j = 1; j <= b + 1; j++)
+        {
+            if (test)
+                cout << "heap[1]: " << heap[1] << " "
+                     << "ptr->v: " << ptr->v << endl;
+            if (heap[1] != ptr->v)
+            {
+                ptr->nxt = new node(heap[1]);
+                ptr = ptr->nxt;
+            }
+            heap[1] = heap[n_heap--];
+            if (test)
+            {
+                cout << "n_heap: " << n_heap << endl;
+                cout << "before heap: ";
+                for (int j = 1; j <= b + 1; j++)
+                {
+                    cout << heap[j] << " ";
+                }
+                cout << endl;
+            }
+            min_heap(1);
+            if (test)
+            {
+                cout << "after heap: ";
+                for (int j = 1; j <= b + 1; j++)
+                {
+                    cout << heap[j] << " ";
+                }
+                cout << endl;
+            }
+        }
+        if (test)
+            cout << endl;
+        ptr = head->nxt;
+        int cnt = -1;
+        bool flag = true;
+        while (ptr != nullptr)
+        {
+            cnt++;
+            if (test)
+                cout << "cnt: " << cnt << " ptr->v: " << ptr->v << endl;
+            if (cnt != ptr->v)
+            {
+                cout << cnt << endl;
+                flag = false;
+                break;
+            }
+            ptr = ptr->nxt;
+        }
+        if (flag)
+            cout << cnt + 1 << endl;
+    }
+
+    return 0;
+}

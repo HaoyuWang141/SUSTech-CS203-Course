@@ -1,0 +1,120 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+bool test = false;
+struct node
+{
+    node *l, *r;
+    int v;
+
+    node(int v = -1)
+    {
+        this->v = v;
+        l = nullptr;
+        r = nullptr;
+    }
+};
+node *tree = nullptr, *X;
+const int MAX = 1005;
+int Q, q, x, k, count;
+bool r;
+
+void insert(node *&f)
+{
+    if (f == nullptr)
+    {
+        f = X;
+        return;
+    }
+    if (X->v < f->v)
+        insert(f->l);
+    else
+        insert(f->r);
+}
+
+void k_min(node *f)
+{
+    if (f == nullptr)
+    {
+        cerr << "something wrong" << endl;
+        return;
+    }
+    if (f->l != nullptr)
+    {
+        k_min(f->l);
+        if (r == true)
+            return;
+    }
+    if (++count == k)
+    {
+        cout << f->v << endl;
+        r = true;
+        return;
+    }
+    if (f->r != nullptr)
+    {
+        k_min(f->r);
+        if (r == true)
+            return;
+    }
+}
+
+void print(node *f)
+{
+    if (f == nullptr)
+    {
+        cerr << "something wrong" << endl;
+        return;
+    }
+    if (f->l != nullptr)
+        print(f->l);
+    cout << f->v << " ";
+    if (f->r != nullptr)
+        print(f->r);
+}
+
+void preorder(node *f)
+{
+    cout<<f->v<<" ";
+    if(f->l!=nullptr)
+        preorder(f->l);
+    if (f->r != nullptr)
+        preorder(f->r);
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+
+    cin >> Q;
+    for (int i = 0; i < Q; i++)
+    {
+        cin >> q;
+        switch (q)
+        {
+        case 1: // insert
+            cin >> x;
+            X = new node(x);
+            insert(tree);
+            break;
+        case 2: // print kth min
+            cin >> k;
+            count = 0;
+            r = false;
+            k_min(tree);
+            break;
+        case 3: // print whole tree
+            print(tree);
+            cout << endl;
+            break;
+        }
+    }
+
+    preorder(tree);
+
+    return 0;
+}

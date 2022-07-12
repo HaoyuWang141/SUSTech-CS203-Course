@@ -1,0 +1,48 @@
+//满分
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main()
+{
+    int stack[100000];
+    int top = -1;
+    char str[100000];
+    scanf("%s", str);
+    int temp = 0;
+    for (int i = 0; i < strlen(str); i++)
+    {
+        if (str[i] <= '9' && str[i] >= '0')
+        {
+            stack[++top] = str[i] - '0';
+        }
+        else
+        {
+            switch (str[i])
+            {
+            case '@':
+                goto result;
+                break;
+            case '+':
+                stack[top - 1] = stack[top - 1] + stack[top];
+                top--;
+                break;
+            case '-':
+                stack[top - 1] = stack[top - 1] - stack[top];
+                top--;
+                break;
+            case '*':
+                stack[top - 1] = stack[top - 1] * stack[top];
+                top--;
+                break;
+            case '/':
+                stack[top - 1] = stack[top - 1] / stack[top];
+                top--;
+                break;
+            }
+        }
+    }
+result:
+    printf("%d", stack[top]);
+    return 0;
+}

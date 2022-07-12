@@ -1,0 +1,46 @@
+//±ê×¼Ëã·¨£ºkmp
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main(int argc, char **argv)
+{
+    bool test = false;
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+        test = true;
+
+    int n;
+    cin >> n;
+    if (n <= 0)
+    {
+        cout << 0 << endl;
+        cerr << "something wrong" << endl;
+        return 0;
+    }
+
+    char *arr = new char[n + 1];
+    for (int i = 1; i <= n; i++)
+    {
+        cin >> arr[i];
+    }
+    int j = 0;
+    int *next = new int[n + 1]{0};
+
+    for (int i = 2; i <= n; i++)
+    {
+        while (j > 0 && arr[j + 1] != arr[i])
+            j = next[j];
+        if (arr[i] == arr[j + 1])
+            j++;
+        next[i] = j;
+    }
+
+    for (int i = 1; i <= n; i++)
+    {
+        cout << next[i] << " ";
+    }
+
+    delete[] arr;
+    delete[] next;
+    return 0;
+}

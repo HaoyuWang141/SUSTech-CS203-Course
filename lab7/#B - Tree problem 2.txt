@@ -1,0 +1,78 @@
+//满分
+#include <iostream>
+#include <cstring>
+using namespace std;
+bool test = false;
+
+struct U
+{
+    int v, e;
+    // v represents the index of connected vertice
+    // e represents the length of edge between this vertice and its connected vertice
+    U *next;
+
+    U(int v, int e, U *next = nullptr)
+    {
+        this->next = next;
+        this->v = v;
+        this->e = e;
+    }
+};
+
+struct vertice
+{
+    long long length;
+    U *u;
+
+    vertice()
+    {
+        length = 0;
+        u = nullptr;
+    }
+};
+
+const int MAX = 100005;
+int N, Q, R, x, y;
+vertice arr[MAX];
+
+void choose_root(int s, int f)
+{
+    if (f >= 1)
+        arr[s].length = arr[f].length + arr[f].u->e;
+    while (arr[s].u != nullptr)
+    {
+        if (arr[s].u->v != f)
+            choose_root(arr[s].u->v, s);
+
+        U *temp = arr[s].u;
+        arr[s].u = arr[s].u->next;
+        delete temp;
+    }
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && argv[1] == "test")
+        test = true;
+
+    cin >> N;
+
+    int a, b, c;
+    for (int i = 0; i < N - 1; i++)
+    {
+        cin >> a >> b >> c;
+        arr[a].u = new U(b, c, arr[a].u);
+        arr[b].u = new U(a, c, arr[b].u);
+    }
+
+    cin >> Q >> R;
+
+    choose_root(R, -1);
+    for (int i = 0; i < Q; i++)
+    {
+        cin >> x >> y;
+        cout << arr[x].length + arr[y].length << endl;
+    }
+
+    return 0;
+}

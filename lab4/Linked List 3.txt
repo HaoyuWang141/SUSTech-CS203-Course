@@ -1,0 +1,111 @@
+//Âú·Ö
+#include <iostream>
+using namespace std;
+
+struct ListNode
+{
+    int value;
+    ListNode *last;
+    ListNode *next;
+
+    ListNode(int value = 0, ListNode *last = nullptr, ListNode *next = nullptr)
+    {
+        this->value = value;
+        this->last = last;
+        this->next = next;
+    }
+};
+
+struct Operactor
+{
+    int operactor;
+    int x;
+    int y;
+};
+
+int main()
+{
+    int N, Q;
+    cin >> N >> Q;
+    ListNode **arr = new ListNode *[N + 1];
+    for (int i = 1; i <= N; i++)
+    {
+        arr[i] = new ListNode(i);
+    }
+    Operactor *o = new Operactor[Q];
+    for (int i = 0; i < Q; i++)
+    {
+        cin >> o[i].operactor;
+        switch (o[i].operactor)
+        {
+        case 1:
+            cin >> o[i].x >> o[i].y;
+            break;
+        case 2:
+            cin >> o[i].x >> o[i].y;
+            break;
+        case 3:
+            cin >> o[i].x;
+            o[i].y = 0;
+            break;
+        }
+    }
+
+    int x, y, count;
+    ListNode *ptr_l = nullptr;
+    ListNode *ptr_r = nullptr;
+    for (int i = 0; i < Q; i++)
+    {
+        switch (o[i].operactor)
+        {
+        case 1:
+            x = o[i].x;
+            y = o[i].y;
+            arr[x]->next = arr[y];
+            arr[y]->last = arr[x];
+            break;
+        case 2:
+            x = o[i].x;
+            y = o[i].y;
+            arr[x]->next = nullptr;
+            arr[y]->last = nullptr;
+
+            break;
+        case 3:
+            x = o[i].x;
+            count = 1;
+            ptr_l = arr[x];
+            ptr_r = arr[x];
+            while (ptr_l->last != nullptr || ptr_r->next != nullptr)
+            {
+                if (ptr_l->last != nullptr)
+                {
+                    count++;
+                    ptr_l = ptr_l->last;
+                }
+                if (ptr_r->next != nullptr)
+                {
+                    count++;
+                    ptr_r = ptr_r->next;
+                }
+            }
+            cout << count << " ";
+
+            while (ptr_l != nullptr)
+            {
+                cout << ptr_l->value << " ";
+                ptr_l = ptr_l->next;
+            }
+            cout << endl;
+            break;
+        }
+    }
+
+    for (int i = 1; i <= N; i++)
+    {
+        delete arr[i];
+    }
+    delete[] o;
+    delete[] arr;
+    return 0;
+}

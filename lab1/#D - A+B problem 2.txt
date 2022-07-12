@@ -1,0 +1,245 @@
+//满分 桶
+#include <iostream>
+using namespace std;
+
+int *x = new int[2000001];
+
+int main()
+{
+	int T = 0;
+	int n = 0;
+	int sum = 0;
+    int min = 0;
+	bool judge = false;
+	cin>>T;
+	
+	for(int count = 0; count < T; count++)
+	{	
+		cin>>n;
+		int *array = new int[n];
+
+		for(int i = 0; i < n; i++)
+		{
+			cin>>array[i];
+		}
+	
+		if(n < 4)
+		{
+			cout << "NO" << endl;
+		}
+		else
+		{
+            sum = 0;
+            min = 0;
+            judge = false;
+			for(int i = 0; i < 2000001; i++)
+			{
+				x[i] = 0;
+			}
+			
+			for(int i = 0; i < n; i++)
+			{
+				for(int j = i + 1; j < n; j++)
+				{
+					if(array[i]==array[j]) continue;
+					
+					sum = array[i] + array[j];
+					min = array[i] <= array[j] ? array[i] : array[j];
+                 
+					if(x[sum] != 0 & x[sum] != min)
+					{
+						judge = true;
+						goto judgement;
+					}
+					else
+					{
+						x[sum] = min;
+					}
+				}
+			}
+			
+			judgement: 
+			if(judge==true)
+			{
+				cout<<"YES"<<endl;
+			}
+			else
+			{	
+				cout<<"NO"<<endl;
+			}
+		}
+		delete[] array;
+	}
+	
+	return 0;
+}
+
+//原始版本
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	int T;
+	int n;
+	cin>>T;	
+	
+	for(int count = 0; count<T;count++)
+	{
+		cin>>n;
+		int *array = new int[n];
+		for(int i = 0; i < n; i++)
+		{
+			cin>>array[i];
+		}
+	
+		if(n < 4)
+		{
+			cout << "0" << endl;
+		}
+		else
+		{
+	
+			for(int i = 0; i < n; i++)
+			{
+				for(int j = i+1; j < n; j++)
+				{
+					for(int k = j+1; k < n; k++)
+					{
+						for(int l = k+1; l<n;l++)
+						{
+							if((array[i]+array[j]==array[k]+array[l])||
+						  	 (array[i]+array[k]==array[j]+array[l])||
+						  	 (array[i]+array[l]==array[j]+array[k]))
+							{
+							cout << "True" << endl;
+							continue;
+							}
+						}
+					}
+				}
+			}
+			delete[] array;
+			cout << "false" << endl;
+		}
+	}
+	
+	return 0;
+}
+
+//二分法
+#include <iostream>
+using namespace std;
+
+void InsertionSortDichotomy(int n, int *arr)
+{
+	int index = 0;
+	int left = 0;
+	int right = 0;
+	int mid = 0;
+	int get = 0;
+	for(int i = 1; i < n; i++)
+	{
+		get= arr[i];
+		left=0;
+		right = i - 1;
+		while(left <= right)
+		{
+			mid = (left + right) / 2;
+			if(get < arr[mid])
+			{
+				right = mid - 1;
+			}
+			else
+			{
+				left = mid + 1;
+			}
+		}
+		for(int j = i; j > left; j--)
+		{
+			arr[j] = arr[j-1];
+		}
+		arr[left] = get;
+	}
+}
+
+int main()
+{
+	int T;
+	int n;
+	cin>>T;
+	
+	for(int count = 0; count < T; count++)
+	{	
+		cin>>n;
+		int *array = new int[n];
+		for(int i = 0; i < n; i++)
+		{
+			cin>>array[i];
+		}
+	
+		if(n < 4)
+		{
+			cout << "NO" << endl;
+		}
+		else
+		{
+			InsertionSortDichotomy(n,array);
+			//for(int i = 0; i<n;i++)
+			//{
+			//	cout<<array[i]<<" ";
+			//}
+			//cout<<endl;
+			
+			int l1 = 0;
+			int r1 = n-1;
+			int l2 = 0;
+			int r2 = 0;
+			int target = 0;
+			bool judge = false;
+			
+			for(; l1 < n-3; l1++)
+			{
+				if(l1 > 0 & array[l1] == array[l1-1]) continue;
+				for(; r1 > 2; r1--)
+				{
+					if(r1 < n-1 & array[r1]==array[r1+1]) continue;
+					target = array[l1]+array[r1];
+					l2=l1+1;
+					r2=r1-1;
+					while(l2<r2)
+					{
+						if(array[l2]+array[r2]==target)
+						{
+							judge = true;
+							l1=n;
+							l2=n;
+							r1=0;
+							r2=0;
+							break;
+						}
+						if(array[l2]+array[r2]>target)
+						{
+							r2--;						
+						}
+						if(array[l2]+array[r2]<target)
+						{
+							l2++;
+						}
+					}
+				}
+			}
+			if(judge)
+			{
+				cout<<"YES"<<endl;
+			}
+			else
+			{	
+				cout<<"NO"<<endl;
+			}
+		}
+		delete[] array;
+	}
+	
+	return 0;
+}

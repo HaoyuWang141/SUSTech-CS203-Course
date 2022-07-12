@@ -1,0 +1,41 @@
+//已知中缀表达式（左根右）和后缀表达式（左右根），求前缀表达式
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+const int MAX = 1000000;
+char in_order[MAX]{0};   //中缀表达式
+char post_order[MAX]{0}; //后缀表达式
+
+void print_pre_order(int root, int start, int end)
+{
+    if (start > end) //相等的时候要输出一下，并且下一次递归中start一定会大于end就不输出了
+        return;
+    cout << post_order[root];
+    int i = start;
+    while (in_order[i] != post_order[root])
+    {
+        i++;
+        if (i > end)
+        {
+            cerr << "something wrong" << endl;
+            return;
+        }
+    }
+    print_pre_order(root - (end - i) - 1, start, i - 1);
+    print_pre_order(root - 1, i + 1, end);
+}
+
+int main()
+{
+    scanf("%s%s", in_order, post_order);
+    int n = strlen(post_order);
+    if (n <= 0)
+        cerr << "something wrong" << endl;
+    else
+    {
+        print_pre_order(n - 1, 0, n - 1);
+    }
+
+    return 0;
+}

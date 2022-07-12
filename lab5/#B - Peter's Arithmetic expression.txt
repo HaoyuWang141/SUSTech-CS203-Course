@@ -1,0 +1,92 @@
+//Âú·Ö
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+struct Stack
+{
+    char data[1000];
+    int top;
+
+    Stack()
+    {
+        top = -1;
+    }
+};
+
+int main()
+{
+    char *str = new char[1000];
+    scanf("%s", str);
+    int len = strlen(str);
+    Stack stack;
+    for (int i = 0; i < len; i++)
+    {
+        if (str[i] >= 'a' && str[i] <= 'z')
+        {
+            cout << str[i];
+        }
+        else
+        {
+            if (stack.top == -1)
+            {
+                stack.data[++stack.top] = str[i];
+            }
+            else if (str[i] == '(')
+            {
+                stack.data[++stack.top] = '(';
+            }
+            else if (str[i] == ')')
+            {
+                while (stack.top != -1)
+                {
+                    if (stack.data[stack.top] != '(')
+                        cout << stack.data[stack.top--];
+                    else
+                    {
+                        stack.data[stack.top--] = '\0';
+                        break;
+                    }
+                }
+            }
+            else if (str[i] == '+' || str[i] == '-')
+            {
+                if (stack.data[stack.top] == '(')
+                    stack.data[++stack.top] = str[i];
+                else
+                {
+                    while (stack.top != -1)
+                    {
+                        if (stack.data[stack.top] == '(')
+                            break;
+                        cout << stack.data[stack.top--];
+                    }
+                    stack.data[++stack.top] = str[i];
+                }
+            }
+            else if (str[i] == '*' || str[i] == '/')
+            {
+                if (stack.data[stack.top] == '(' || stack.data[stack.top] == '+' || stack.data[stack.top] == '-')
+                    stack.data[++stack.top] = str[i];
+                else
+                {
+                    while (stack.top != -1)
+                    {
+                        if (stack.data[stack.top] == '(' || stack.data[stack.top] == '+' || stack.data[stack.top] == '-')
+                            break;
+                        cout << stack.data[stack.top--];
+                    }
+                    stack.data[++stack.top] = str[i];
+                }
+            }
+        }
+    }
+    while (stack.top != -1)
+    {
+        if (stack.data[stack.top] == '(')
+            cerr << "   what fuck???" << endl;
+        cout << stack.data[stack.top--];
+    }
+
+    return 0;
+}

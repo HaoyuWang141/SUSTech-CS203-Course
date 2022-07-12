@@ -1,0 +1,266 @@
+//均需要传入数组长度n和数组arr
+//由小到大排列
+
+//1. 冒泡法 Bubble Sort
+BubbleSort(int *arr, int n)
+{
+	int temp = 0;
+	for(int i = 1; i < n; i++)
+	{
+		for(int j = 0; j < n - i; j++)
+		{
+			if(arr[j] > arr[j+1])
+			{
+				temp = arr[j];
+				arr[j] = arr[j+1];
+				arr[j+1] = temp;
+			}
+		}
+	}
+}
+
+//2. 选择排序 Selection Sort
+SelectionSort(int *arr, int n)
+{
+	int index_min = 0;
+	int temp = 0;
+	for(int i = 0; i < n - 1; i++)
+	{
+		index_min = i;
+		for(int j = i + 1; j < n; j++)
+		{
+			if(arr[index_min] > arr[j])
+			{
+				index_min = j;
+			}
+		}
+		
+		if(index_min != i) // ! ! !
+		{
+			temp = arr[i];
+			arr[i] = arr[index_min];
+			arr[index_min] = temp;
+		}
+	}
+}
+
+//3. 插入排序 Insertion Sort
+InsertionSort(int *arr, int n)
+{
+	int index = 0;
+	for(int i = 1; i < n; i++)
+	{
+		get= arr[i];
+		for(int j = i - 1; j >= 0; j--)
+		{
+			if(get >= arr[j])
+			{
+				arr[j+1] = get;
+				break;
+			}
+			arr[j+1] = arr[j];
+		}
+	}
+}
+
+//4. 二分插入排序 Dichotomy Insertion Sort
+InsertionSortDichotomy(int *arr, int n)
+{
+	int index = 0;
+	int left = 0;
+	int right = 0;
+	int mid = 0;
+	int get = 0;
+	for(int i = 1; i < n; i++)
+	{
+		get= arr[i];
+		left = 0;
+		right = i -1;
+		while(left <= right)
+		{
+			mid = (left + right) / 2;
+			if(get < arr[mid])
+			{
+				right = mid - 1;	
+			}
+			else
+			{
+				left = mid + 1;
+			}
+		}
+		for(int j = i; j > left; j--)
+		{
+			arr[j] = arr[j-1];
+		}
+		arr[left] = get;
+	}
+}
+
+//5. 希尔排序Shell Sort
+ShellSort(int *arr, int n)
+{
+	int h = 0;
+	int get = 0;
+	while(h <= n)
+	{
+		h = h * 3 + 1;//h=1 4 13 40 121
+	}
+	while(h > 1)
+	{
+		h = (h - 1) / 3;
+		for(int i = h; i < n; i++)
+		{
+			get = arr[i];
+			for(int j = i - h; j >= 0; j-=h)
+			{
+				if(get >= arr[j])
+				{
+					arr[j+h] = get;
+					break;
+				}
+				arr[j+h] = arr[j];	
+			}
+		}
+	}
+}
+
+//6. 归并排序 Merge Sort
+//6.1 递归
+void merge_recursive(int *arr, int start, int end)
+{
+    if (start >= end)
+        return;
+    else
+    {
+        int *temp = new int[end - start + 1];
+        merge_recursive(arr, start, (start + end) / 2);
+        merge_recursive(arr, (start + end) / 2 + 1, end);
+        int left = start;
+        int right = (start + end) / 2 + 1;
+        int index = 0;
+        while (left <= (start + end) / 2 || right <= end)
+        {
+            if (left > (start + end) / 2)
+            {
+                temp[index++] = arr[right++];
+                continue;
+            }
+            if (right > end)
+            {
+                temp[index++] = arr[left++];
+                continue;
+            }
+            if (arr[left] <= arr[right])
+                temp[index++] = arr[left++];
+            else
+                temp[index++] = arr[right++];
+        }
+        index = 0;
+        for (int i = start; i <= end; i++)
+        {
+            arr[i] = temp[index++];
+        }
+        delete[] temp;
+    }
+}
+
+long long int merge_sort(int *arr, int len)
+{
+    return merge_recursive(arr, 0, len - 1);
+}
+
+
+//7. 堆排序 Heap Sort
+//max_heapify：
+//1. 对于三个元素的堆，它将其直接变成最大堆
+//2. 对于超过三个元素的堆，它要求除最前面三个元素之外，其他元素已经排成最大堆了
+//3. 该函数另一个重要的应用是在堆排序中，头尾交换后，将交换后的顶部元素（最小值）排到后面。
+void max_heapify(int *arr, int start, int end)
+{
+    //建立父节点指标和子节点指标
+    int dad = start;
+    int son = dad * 2 + 1;
+
+    //若子节点在范围内才作比较
+    while (son <= end)
+    {
+        //先挑出两个子节点（如果有两个的话）中最大的那个
+        if (son + 1 <= end && arr[son + 1] > arr[son])
+            son++;
+        if (arr[dad] > arr[son]) //如果父节点比较大就直接退出
+            return;
+        else
+        {
+            //交换父子内容，然后下一次循环
+            int temp = arr[son];
+            arr[son] = arr[dad];
+            arr[dad] = temp;
+
+            dad = son;
+            son = dad * 2 + 1;
+        }
+    }
+}
+
+void heap_sort(int *arr, int n)
+{
+    //初始化整个堆将其变为最大堆
+    for (int i = n / 2 - 1; i >= 0; i--)
+        max_heapify(arr, i, n - 1);
+
+    //堆排序（最大堆调整）
+    for (int i = n - 1; i > 0; i--)
+    {
+        int temp = arr[0];
+        arr[0] = arr[i];
+        arr[i] = temp;
+
+        max_heapify(arr, 0, i - 1);
+    }
+}
+
+//8. 桶排序 Bucket Sort
+//9. 快速排序 Quick Sort
+//9.1 递归quick sort recursive
+void swap(int *arr, int a, int b)
+{
+    int temp = arr[a];
+    arr[a] = arr[b];
+    arr[b] = temp;
+}
+
+void quick_sort_recursive(int *arr, int start, int end)
+{
+    if(start >= end)
+        return;
+
+    int target = arr[end];
+    int index_less = start;
+    int index_more = end - 1;
+
+    while (index_less < index_more)
+    {
+        while (index_less < index_more && arr[index_less] < target)
+            index_less++;
+        while (index_less < index_more && arr[index_more] >= target)
+            index_more--;
+        swap(arr, index_less, index_more);
+    }
+
+    if (arr[index_less] >= arr[end])
+        swap(arr, index_less, end);
+    else
+        index_less++;
+
+    quick_sort_recursive(arr, start, index_less - 1);
+    quick_sort_recursive(arr, index_less + 1, end);
+}
+
+void quick_sort(int *arr, int len)
+{
+    quick_sort_recursive(arr, 0, len - 1);
+}
+//10. 计数排序 Counting Sort
+//11. 基数排序 Radix Sort
+
+

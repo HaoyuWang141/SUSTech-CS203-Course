@@ -1,0 +1,297 @@
+//满分
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int read(int x = 0, int f = 1, char ch = getchar())
+{
+    while (ch < '0' || ch > '9')
+    {
+        if (ch == '-')
+            f = -1;
+        ch = getchar();
+    }
+    while (ch >= '0' && ch <= '9')
+        x = x * 10 + ch - '0', ch = getchar();
+    return x * f;
+}
+
+struct Node
+{
+    int value;
+    Node *right;
+    Node *down;
+
+    Node()
+    {
+        this->value = -1;
+        this->right = nullptr;
+        this->down = nullptr;
+    }
+
+    Node(int value)
+    {
+        this->value = value;
+        this->right = nullptr;
+        this->down = nullptr;
+    }
+};
+
+int main(int argc, char *argv[])
+{
+    bool test = false;
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+        test = true;
+
+    int n, m, q;
+    int a, b, c, d, h, w;
+    Node *head = new Node();
+    Node *ptr = head;
+
+    n = read();
+    m = read();
+    q = read();
+
+    for (int i = 0; i < m + 1; i++)
+    {
+        ptr->right = new Node();
+        ptr = ptr->right;
+    }
+    for (int i = 0; i < n; i++)
+    {
+        ptr->right = new Node();
+        ptr = ptr->right;
+        for (int j = 0; j < m; j++)
+        {
+            ptr->right = new Node();
+            ptr = ptr->right;
+            ptr->value = read();
+        }
+        ptr->right = new Node();
+        ptr = ptr->right;
+    }
+    for (int i = 0; i < m + 2; i++)
+    {
+        ptr->right = new Node();
+        ptr = ptr->right;
+    }
+
+    Node *ptr_1 = head;
+    for (int i = 0; i < m + 2; i++)
+    {
+        ptr_1 = ptr_1->right;
+    }
+    Node *ptr_2 = head;
+    for (int i = 0; i < (n + 1) * (m + 2); i++)
+    {
+        ptr_2->down = ptr_1;
+        ptr_1 = ptr_1->right;
+        ptr_2 = ptr_2->right;
+    }
+
+    if (test == true)
+    {
+        //打印矩阵
+        cout << endl;
+        ptr = head;
+        Node *ptr_temp = ptr->down;
+        for (int i = 0; i < n + 2; i++)
+        {
+            for (int j = 0; j < m + 2; j++)
+            {
+                cout << ptr->value << "\t";
+                ptr = ptr->right;
+            }
+            cout << endl;
+            ptr = ptr_temp;
+            if (ptr_temp != nullptr)
+                ptr_temp = ptr_temp->down;
+        }
+        cout << endl;
+    }
+
+    Node *ptr_a_1 = nullptr; //针对第一个矩阵，处理左侧和下侧
+    Node *ptr_a_2 = nullptr; //针对第二个矩阵，处理左侧和下侧
+    Node *ptr_b_1 = nullptr; //针对第一个矩阵，处理上侧和右侧
+    Node *ptr_b_2 = nullptr; //针对第二个矩阵，处理上侧和右侧
+    for (int i = 0; i < q; i++)
+    {
+        ptr_a_1 = head;
+        ptr_a_2 = head;
+        ptr_b_1 = head;
+        ptr_b_2 = head;
+
+        cin >> a >> b >> c >> d >> h >> w;
+        if (a <= 0 || b <= 0 || c <= 0 || d <= 0 || h <= 0 ||
+            a + h - 1 > n || b + w - 1 > m || c + h - 1 > n || d + w - 1 > m)
+        {
+            cerr << "待操作区域不在矩阵范围内" << endl;
+            continue;
+        }
+        else
+        {
+            //指针位置初始化
+            for (int j = 0; j < a - 1; j++)
+            {
+                ptr_a_1 = ptr_a_1->down;
+                ptr_b_1 = ptr_b_1->down;
+            }
+            for (int j = 0; j < b - 1; j++)
+            {
+                ptr_a_1 = ptr_a_1->right;
+                ptr_b_1 = ptr_b_1->right;
+            }
+
+            for (int j = 0; j < c - 1; j++)
+            {
+                ptr_a_2 = ptr_a_2->down;
+                ptr_b_2 = ptr_b_2->down;
+            }
+            for (int j = 0; j < d - 1; j++)
+            {
+                ptr_a_2 = ptr_a_2->right;
+                ptr_b_2 = ptr_b_2->right;
+            }
+
+            if (test)
+            {
+                cout << "a_1,b_1: " << ptr_a_1->value << endl;
+                cout << "a_2,b_2: " << ptr_a_2->value << endl;
+                cout << endl;
+            }
+
+            //开始处理左侧和下侧
+            for (int j = 0; j < h; j++)
+            {
+                ptr_a_1 = ptr_a_1->down;
+                ptr_a_2 = ptr_a_2->down;
+
+                Node *temp = ptr_a_1->right;
+                ptr_a_1->right = ptr_a_2->right;
+                ptr_a_2->right = temp;
+                temp = nullptr;
+
+                if (test)
+                {
+                    cout << "a_1" << endl;
+                    cout << ptr_a_1->value << "\t" << ptr_a_1->right->value<<endl;
+                    cout << ptr_a_1->down->value << endl;
+                    cout << "a_2" << endl;
+                    cout << ptr_a_2->value << "\t" << ptr_a_2->right->value<<endl;
+                    cout << ptr_a_2->down->value << endl;
+                }
+            }
+
+            for (int j = 0; j < w; j++)
+            {
+                ptr_a_1 = ptr_a_1->right;
+                ptr_a_2 = ptr_a_2->right;
+
+                Node *temp = ptr_a_1->down;
+                ptr_a_1->down = ptr_a_2->down;
+                ptr_a_2->down = temp;
+                temp = nullptr;
+
+                if (test)
+                {
+                    cout << "a_1" << endl;
+                    cout << ptr_a_1->value << "\t" << ptr_a_1->right->value<<endl;
+                    cout << ptr_a_1->down->value << endl;
+                    cout << "a_2" << endl;
+                    cout << ptr_a_2->value << "\t" << ptr_a_2->right->value<<endl;
+                    cout << ptr_a_2->down->value << endl;
+                }
+            }
+
+            //开始处理上侧和右侧
+            for (int j = 0; j < w; j++)
+            {
+                ptr_b_1 = ptr_b_1->right;
+                ptr_b_2 = ptr_b_2->right;
+
+                Node *temp = ptr_b_1->down;
+                ptr_b_1->down = ptr_b_2->down;
+                ptr_b_2->down = temp;
+                temp = nullptr;
+
+                if (test)
+                {
+                    cout << "b_1" << endl;
+                    cout << ptr_b_1->value << "\t" << ptr_b_1->right->value<<endl;
+                    cout << ptr_b_1->down->value << endl;
+                    cout << "b_2" << endl;
+                    cout << ptr_b_2->value << "\t" << ptr_b_2->right->value<<endl;
+                    cout << ptr_b_2->down->value << endl;
+                }
+            }
+
+            for (int j = 0; j < h; j++)
+            {
+                ptr_b_1 = ptr_b_1->down;
+                ptr_b_2 = ptr_b_2->down;
+
+                Node *temp = ptr_b_1->right;
+                ptr_b_1->right = ptr_b_2->right;
+                ptr_b_2->right = temp;
+                temp = nullptr;
+
+                if (test)
+                {
+                    cout << "b_1" << endl;
+                    cout << ptr_b_1->value << "\t" << ptr_b_1->right->value<<endl;
+                    cout << ptr_b_1->down->value << endl;
+                    cout << "b_2" << endl;
+                    cout << ptr_b_2->value << "\t" << ptr_b_2->right->value<<endl;
+                    cout << ptr_b_2->down->value << endl;
+                }
+            }
+
+            if (test == true)
+            {
+                //打印矩阵
+                cout << endl;
+                ptr = head;
+                Node *ptr_temp = ptr->down;
+                for (int i = 0; i < n + 2; i++)
+                {
+                    for (int j = 0; j < m + 2; j++)
+                    {
+                        cout << ptr->value << "\t";
+                        ptr = ptr->right;
+                    }
+                    cout << endl;
+                    ptr = ptr_temp;
+                    if (ptr_temp != nullptr)
+                        ptr_temp = ptr_temp->down;
+                }
+                cout << endl;
+            }
+        }
+    }
+
+    //打印矩阵
+    ptr = head->right->down;
+    Node *ptr_temp = ptr->down;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            cout << ptr->value << " ";
+            ptr = ptr->right;
+        }
+        cout << endl;
+        ptr = ptr_temp;
+        ptr_temp = ptr_temp->down;
+    }
+
+    ptr = head;
+    Node *ptr_next = ptr->right;
+    while (ptr_next != nullptr)
+    {
+        delete ptr;
+        ptr = ptr_next;
+        ptr_next = ptr_next->right;
+    }
+    delete ptr;
+    return 0;
+}

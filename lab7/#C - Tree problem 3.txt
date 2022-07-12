@@ -1,0 +1,134 @@
+//满分
+#include <iostream>
+#include <cstring>
+using namespace std;
+bool test = false;
+
+struct U
+{
+    int v;
+    // v represents the index of connected vertice
+    U *next;
+
+    U(int v, U *next = nullptr)
+    {
+        this->next = next;
+        this->v = v;
+    }
+};
+
+struct vertice
+{
+    int size;
+    int weight;
+    int sum;
+    U *u;
+
+    vertice()
+    {
+        u = nullptr;
+        size = 1;
+        weight = 0;
+        sum = 0;
+    }
+};
+
+const int MAX = 100005;
+int N;
+vertice arr[MAX];
+int target = MAX;
+long long sum = 0;
+
+void GetCentroid(int c, int f)
+{
+    U *ptr = arr[c].u;
+    while (ptr != nullptr)
+    {
+        if (ptr->v != f)
+        {
+            GetCentroid(ptr->v, c);
+            arr[c].size += arr[ptr->v].size;
+            arr[c].weight = max(arr[c].weight, arr[ptr->v].size);
+        }
+        ptr = ptr->next;
+    }
+    arr[c].weight = max(arr[c].weight, N - arr[c].size);
+
+    if (test)
+    {
+        cout << "c: " << c
+             << " weight: " << arr[c].weight
+             << " size: " << arr[c].size << endl;
+    }
+
+    if (arr[c].weight <= N / 2 && c < target)
+        target = c;
+}
+
+void caculate_distance(int c, int f, int d)
+{
+    sum += d;
+
+    if (test)
+    {
+        cout << "c: " << c << "sum=" << sum << endl;
+    }
+
+    while (arr[c].u != nullptr)
+    {
+        if (arr[c].u->v != f)
+            caculate_distance(arr[c].u->v, c, d + 1);
+
+        U *temp = arr[c].u;
+        arr[c].u = arr[c].u->next;
+        delete temp;
+    }
+}
+
+void caculate_sum(int root)
+{
+    caculate_distance(root, -1, 0);
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test patten" << endl;
+    }
+
+    cin >> N;
+
+    int a, b;
+    for (int i = 0; i < N - 1; i++)
+    {
+        cin >> a >> b;
+        arr[a].u = new U(b, arr[a].u);
+        arr[b].u = new U(a, arr[b].u);
+    }
+
+    if (test)
+    {
+        cout << "input test begin" << endl;
+        for (int i = 1; i <= N; i++)
+        {
+            cout << "vertice " << i << " is connected with: ";
+            U *ptr = arr[i].u;
+            while (ptr != nullptr)
+            {
+                cout << ptr->v << " ";
+                ptr = ptr->next;
+            }
+            cout << endl;
+        }
+        cout << "input test end" << endl;
+    }
+
+    GetCentroid(1, -1);
+    caculate_sum(target);
+
+    cout << target << " " << sum << endl;
+
+    return 0;
+}

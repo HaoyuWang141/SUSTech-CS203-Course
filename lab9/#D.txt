@@ -1,0 +1,160 @@
+// 应该没满分
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+using namespace std;
+bool test = false;
+typedef long long int ll;
+ll N, M, x_0, y_0;
+char arr[1505][1505]{0};
+ll vis[1505][1505]{0};
+ll vis_x[1505][1505]{0};
+ll vis_y[1505][1505]{0};
+bool have_road = false;
+ll stack[100000]{0};
+ll n=0;
+
+ll f(ll x, ll y)
+{
+    if (x >= N || x < 0 || y >= M || y < 0)
+    {
+        return -1;
+    }
+    else
+        return M * (x + 1) + (y + 1);
+}
+
+int mod(ll a, ll A)
+{
+    if (a >= 0)
+        return a % A;
+
+    while (true)
+    {
+        a += A;
+        if (a >= 0)
+            return a;
+    }
+}
+
+void dfs(ll fx, ll fy, ll x, ll y)
+{
+    if (test)
+        cout << "(" << fx << "," << fy << ") "
+             << "(" << x << "," << y << ") "
+             << "(" << mod(x, N) << "," << mod(y, M) << ") " << endl;
+
+    vis_x[mod(x, N)][mod(y, M)] = x;
+    vis_y[mod(x, N)][mod(y, M)] = y;
+    vis[mod(x, N)][mod(y, M)] = 1;
+
+    for (int i = -1; i <= 1; i++)
+    {
+        for (int j = -1; j <= 1; j++)
+        {
+            ll x_son = x + i;
+            ll y_son = y + j;
+
+            if (i == 0 && j == 0) //排除自己
+                continue;
+
+            if (i * j != 0)
+                continue;
+
+            if (x_son == fx && y_son == fy) // 排除上一个位置
+                continue;
+
+            if (arr[mod(x_son, N)][mod(y_son, M)] == '.') // 判断是否是路
+            {
+                if (test)
+                {
+                    cout << "(" << x_son << "," << y_son << ") "
+                         << " vis_x[" << mod(x_son, N) << "][" << mod(y_son, M) << "] " << vis_x[mod(x_son, N)][mod(y_son, M)]
+                         << " vis_y[" << mod(x_son, N) << "][" << mod(y_son, M) << "] " << vis_y[mod(x_son, N)][mod(y_son, M)]
+                         << " f(x_son, y_son) " << f(x_son, y_son) << endl;
+                }
+
+                if (vis[mod(x_son, N)][mod(y_son, M)] != 0)
+                {
+                    if (vis_x[mod(x_son, N)][mod(y_son, M)] != x_son || vis_y[mod(x_son, N)][mod(y_son, M)] != y_son)
+                    {
+                        if (test)
+                            cout << "have_road=true" << endl;
+                        have_road = true;
+                        vis_x[mod(x, N)][mod(y, M)] = 0;
+                        vis_y[mod(x, N)][mod(y, M)] = 0;
+                        vis[mod(x, N)][mod(y, M)] = 0;
+                        return;
+                    }
+                    else
+                    {
+                        if (test)
+                            cout << "have_road=false" << endl;
+                        have_road = false;
+                        vis_x[mod(x, N)][mod(y, M)] = 0;
+                        vis_y[mod(x, N)][mod(y, M)] = 0;
+                        vis[mod(x, N)][mod(y, M)] = 0;
+                        return;
+                    }
+                }
+                dfs(x, y, x_son, y_son);
+                if (test)
+                {
+                    cout << "back "
+                         << "have_road: " << have_road << endl;
+                }
+                if (have_road)
+                {
+                    vis_x[mod(x, N)][mod(y, M)] = 0;
+                    vis_y[mod(x, N)][mod(y, M)] = 0;
+                    vis[mod(x, N)][mod(y, M)] = 0;
+                    return;
+                }
+            }
+        }
+    }
+    vis_x[mod(x, N)][mod(y, M)] = 0;
+    vis_y[mod(x, N)][mod(y, M)] = 0;
+    vis[mod(x, N)][mod(y, M)] = 0;
+}
+
+int main(int argc, char **argv)
+{
+    if (argc == 2 && strcmp(argv[1], "test") == 0)
+    {
+        test = true;
+        cout << "test pattern" << endl;
+    }
+    while (true)
+    {
+        cin >> N >> M;
+        if (N == -1)
+            break;
+
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < M; j++)
+            {
+                cin >> arr[i][j];
+                if (arr[i][j] == 'S')
+                {
+                    arr[i][j] = '.';
+                    x_0 = i;
+                    y_0 = j;
+                }
+            }
+        }
+
+        have_road = false;
+
+        dfs(-1, -1, x_0, y_0);
+
+        if (have_road)
+            cout << "Yes" << endl;
+        else
+            cout << "No" << endl;
+    }
+
+    return 0;
+}
